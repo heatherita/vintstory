@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Vintage Story Market</title>
+</head>
+<body>
+    <h1>Vintage Clothing Listings</h1>
+    <a href="/add">Add a New Listing</a>
+    <div>
+        {% for item in items %}
+            <div>
+                <h3>{{ item.title }}</h3>
+                <img src="{{ item.image_url }}" alt="{{ item.title }}" width="150">
+                <p>{{ item.description }}</p>
+                <p>Price: ${{ item.price }}</p>
+                <p>{{ item.story }}</p>
+                <a href="mailto:{{ item.seller_contact }}">Contact Seller</a>
+            </div>
+        {% endfor %}
+    </div>
+</body>
+</html>
