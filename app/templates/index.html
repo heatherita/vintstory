@@ -15,8 +15,30 @@
                 <p>Price: ${{ item.price }}</p>
                 <p>{{ item.story }}</p>
                 <a href="mailto:{{ item.seller_contact }}">Contact Seller</a>
+                <h3>Comments</h3>
+                {% for comment in item.comments %}
+                    <div>
+                        <p>{{ comment.content }}</p>
+                        <small>Posted on: {{ comment.created_at }}</small>
+                    </div>
+                {% endfor %}
+
+                <!-- Comment form below each listing -->
+                <form action="/add_comment/{{ item.id }}" method="POST">
+                    <label for="content">Add a Comment</label><br>
+                    <textarea name="content" rows="3"></textarea><br>
+                    <input type="submit" value="Post Comment">
+                </form>
             </div>
         {% endfor %}
     </div>
+
+    <h2>Admin Menu</h2>
+    <div>
+        <a href="/data/add">Add data</a>
+        <br/>
+        <a href="/data/delete">Delete data</a>
+    </div>
+
 </body>
 </html>
