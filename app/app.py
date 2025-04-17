@@ -19,8 +19,16 @@ db.init_app(app)
 # Home page to show listings
 @app.route('/')
 def index():
+    # items = Listing.query.all()
+    return render_template('index.html')
+
+
+# Listing page to show listings
+@app.route('/listings',methods=['GET'])
+def listings():
     items = Listing.query.all()
-    return render_template('index.html', items=items)
+    return render_template('listing_page.html', items=items)
+
 
 # Page for adding a new listing
 @app.route('/add', methods=['GET', 'POST'])
@@ -41,7 +49,8 @@ def add_item():
         db.session.add(new_item)
         db.session.commit()
 
-        return redirect('/')
+        return redirect('/listings')
+        #return redirect('listing_page.html')
 
     return render_template('add_item.html')
 
@@ -56,20 +65,25 @@ def add_comment(listing_id):
 
     return redirect(f'/listing/{listing_id}')
 
+
 @app.route('/listing/<int:listing_id>')
 def show_listing(listing_id):
     item = Listing.query.get_or_404(listing_id)
-    return render_template('listing_page.html', item=item)
-
+    # return render_template('listing_page.html', item=item)
+    return redirect('/listings')
 
 # Populate with dummy data
 @app.route('/data/add', methods=['GET'])
 def add_data():
     # if request.method == 'POST':
+    dummy_listing_comments_1 = ["what a cool blouse!", "that blouse just beats all", "I have a blouse just like it!", "it's on fire!"]
+    dummy_listing_comments_2 = ["what a striped skirt!", "that skirt is so fashionable", "I would wear that every day", "That's like a skirt i had during the roman times"]
+    dummy_listing_comments_3 = ["well! I never!", "don't assume!"]
 
     dummy_listing_items = [
-        ['blouse', 'nice pretty blouse', 'found at the store', 12.0, 'martin', 'hbuch4@yahoo.com', 'bla', 'bla'],
-        ['skirt', 'striped skirt', 'found in a pond', 32.0, 'jenny', 'hbuch4@yahoo.com', 'doh', 'doh']
+        ['blouse', 'nice pretty blouse', 'found at the store', 12.0, 'martin', 'hbuch4@yahoo.com', 'bla', 'bla', dummy_listing_comments_1],
+        ['skirt', 'striped skirt', 'found in a pond', 32.0, 'jenny', 'hbuch4@yahoo.com', 'doh', 'doh', dummy_listing_comments_2],
+        ['dress', 'a checkered dress', 'this checkered dress has a checkered past', 42.0, 'rudolph', 'hbuch4@yahoo.com', 'doh', 'doh', dummy_listing_comments_3]
     ]
 
     for item in dummy_listing_items:
@@ -81,23 +95,31 @@ def add_data():
         seller_contact = item[5]
         image_url = item[6]
         then_image_url = item[7]
+        comments = item[8]
+
+        listingComments = []
+        for comment in comments:
+            # new_comment = Comment(content=comment)
+            listingComments.append(Comment(content=comment))
 
         new_item = Listing(title=title, description=description, story=story, price=price,
                            seller_name=seller_name, seller_contact=seller_contact,
-                           image_url=image_url, then_image_url=then_image_url)
+                           image_url=image_url, then_image_url=then_image_url,comments=listingComments)
+
         db.session.add(new_item)
         db.session.commit()
-    return redirect('/')
-    return render_template('index.html')
+    return redirect('/listings')
+    # return render_template('index.html')
 
 
 # Clear out all dummy data
 @app.route('/data/delete', methods=['GET'])
 def delete_data():
     Listing.query.delete()
+    Comment.query.delete()
     db.session.commit()
-    return redirect('/')
-    return render_template('index.html')
+    return redirect('/listings')
+    # return render_template('index.html')
 
 
 if __name__ == '__main__':
