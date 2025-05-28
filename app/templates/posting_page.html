@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Vintage Story Market</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .posting { border-bottom: 1px solid #ccc; margin-bottom: 20px; padding-bottom: 10px; }
+        img { max-width: 150px; }
+        textarea { width: 100%; }
+    </style>
+</head>
+<body>
+    <h1>Vintage Clothing Postings</h1>
+    <p><a href="/add">➕ Add a New Posting</a></p>
+
+    {% for item in items %}
+    <div class="posting">
+        <h2>{{ item.title }}</h2>
+        <img src="{{ url_for('static', filename='images/' + item.image_url) }}" alt="{{ item.title }}">
+        <p><strong>Description:</strong> {{ item.description }}</p>
+        <p><strong>Story:</strong> {{ item.story }}</p>
+        <p><strong>User:</strong> <a href="mailto:{{ item.user_contact }}">{{ item.user_name }}</a></p>
+
+        <h4>Comments</h4>
+        {% for comment in item.comments %}
+            <div>
+                <p>{{ comment.content }}</p>
+                <img src="{{ url_for('static', filename='images/' + comment.image_url) }}" alt="{{ comment.title }}">
+                {% if comment.created_at %}
+                    <small>Posted on {{ comment.created_at.strftime('%Y-%m-%d %H:%M') }}</small>
+                {% endif %}
+            </div>
+        {% else %}
+            <p><em>No comments yet.</em></p>
+        {% endfor %}
+
+        <form action="/add_comment/{{ item.id }}" method="POST">
+            <label for="content">Add a Comment:</label><br>
+            <textarea name="content" rows="3" required></textarea><br>
+            <input type="submit" value="Post Comment">
+        </form>
+    </div>
+    {% endfor %}
+
+    <hr>
+    <h3>Vintage Clothing Menu</h3>
+    <nav>
+        <a href="/">🏠 Home</a> |
+        <a href="/postings">🧺 Postings</a> |
+         <a href="/data/postings/add">🔄 Add Sample Data</a> |
+        <a href="/data/postings/delete">❌ Delete All Data</a>
+    </nav>
+</body>
+</html>
