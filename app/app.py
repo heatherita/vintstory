@@ -14,7 +14,7 @@ def create_app():
 
 
     IMG_FOLDER = os.path.join("static", "images")
-    app.config["UPLOAD_FOLDER"] = IMG_FOLDER
+    app.config["UPLOAD"] = IMG_FOLDER
 
     app.register_blueprint(listings_bp)
     app.register_blueprint(postings_bp)

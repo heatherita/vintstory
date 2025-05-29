@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect
+from flask import Blueprint, render_template, request, redirect, current_app
 from models.posting import Posting
 from models.comment import Comment
 from models.data_helper import DataHelper
