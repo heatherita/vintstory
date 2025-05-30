@@ -33,5 +33,13 @@ def file_upload(posting_id):
         f = request.files['file']
         filename = secure_filename(f.filename)
         f.save(os.path.join(current_app.config['UPLOAD'], filename))
-        return send_from_directory(current_app.config['UPLOAD'], filename)
+
+        new_comment = Comment(
+            content=request.form['content'],
+            posting_id=posting_id,
+            image_url=filename
+        )
+        db.session.add(new_comment)
+        db.session.commit()
+        #return send_from_directory(current_app.config['UPLOAD'], filename)
     return redirect(f'/posting/{posting_id}')

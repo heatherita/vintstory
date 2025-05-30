@@ -12,8 +12,7 @@ def create_app():
 
     db.init_app(app)
 
-
-    IMG_FOLDER = os.path.join("static", "images")
+    IMG_FOLDER = os.path.join("static", "images","uploads")
     app.config["UPLOAD"] = IMG_FOLDER
 
     app.register_blueprint(listings_bp)

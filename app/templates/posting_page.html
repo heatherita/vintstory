@@ -5,57 +5,133 @@
     <title>Vintage Story Market</title>
     <style>
         body { font-family: Arial, sans-serif; padding: 20px; }
-        .posting { border-bottom: 1px solid #ccc; margin-bottom: 20px; padding-bottom: 10px; }
-        img { max-width: 150px; }
-        textarea { width: 100%; }
+        form { max-width: 500px; }
+        label { font-weight: bold; }
+
+        .draggable-img {
+            cursor: grab;
+            transition: transform 0.2s ease;
+        }
+        .draggable-img:active {
+            cursor: grabbing;
+            transform: scale(1.03);
+        }
+        input, textarea {
+            margin-bottom: 10px;
+            padding: 8px;
+            box-sizing: border-box;
+        }
+        textarea {
+            width: 100%;
+        }
+        input[type="submit"] {
+            width: auto;
+            background-color: #2f855a;
+            color: white;
+            border: none;
+            cursor: pointer;
+            padding: 10px 20px;
+        }
+        input[type="submit"]:hover {
+            background-color: #276749;
+        }
+        nav a {
+            margin-right: 10px;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
-    <h1>Vintage Clothing Postings</h1>
-    <p><a href="/add">➕ Add a New Posting</a></p>
 
-    {% for item in items %}
-    <div class="posting">
-        <h2>{{ item.title }}</h2>
-        <img src="{{ url_for('static', filename='images/' + item.image_url) }}" alt="{{ item.title }}">
-        <p><strong>Description:</strong> {{ item.description }}</p>
-        <p><strong>Story:</strong> {{ item.story }}</p>
-        <p><strong>User:</strong> <a href="mailto:{{ item.user_contact }}">{{ item.user_name }}</a></p>
+<h1>Vintage Clothing Postings</h1>
+<p><a href="/add">➕ Add a New Posting</a></p>
 
-        <h4>Comments</h4>
-        {% for comment in item.comments %}
+<div style="display: inline-flex;">
+    <div style="flex: 1;">
+        {% for item in items %}
+
+        <div class="posting">
+            <h2>{{ item.title }}</h2>
+            <img src="{{ url_for('static', filename='images/' + item.image_url) }}"
+                 alt="{{ item.title }}"
+                 class="draggable-img random-size"
+                 draggable="true"
+                 ondragstart="drag(event)"
+                 data-img-src="{{ url_for('static', filename='images/' + item.image_url) }}">
+            <p><strong>Description:</strong> {{ item.description }} | <strong>Story:</strong> {{ item.story }} <strong>
+                | User:</strong> <a href="mailto:{{ item.user_contact }}">{{ item.user_name }}</a></p>
+
+            <h4>Comments:</h4>
+            {% for comment in item.comments %}
             <div>
-                <p>{{ comment.content }}</p>
-                <img src="{{ url_for('static', filename='images/' + comment.image_url) }}" alt="{{ comment.title }}">
+                <img src="{{ url_for('static', filename='images/uploads/' + comment.image_url) }}"
+                     alt="{{ comment.title }}"
+                     class="draggable-img random-size"
+                     draggable="true"
+                     ondragstart="drag(event)"
+                     data-img-src="{{ url_for('static', filename='images/uploads/' + comment.image_url) }}">
+                <br/>
+                {{ comment.content }}
                 {% if comment.created_at %}
-                    <small>Posted on {{ comment.created_at.strftime('%Y-%m-%d %H:%M') }}</small>
+                <small><strong>Posted on {{ comment.created_at.strftime('%Y-%m-%d %H:%M') }}</strong></small>
                 {% endif %}
             </div>
-        {% else %}
+            {% else %}
             <p><em>No comments yet.</em></p>
+            {% endfor %}
+
+            <form action="/add_image/{{ item.id }}" method="post" enctype="multipart/form-data">
+                <label for="content">Add a Comment:</label><br>
+                <textarea name="content" rows="3" required></textarea><br>
+                <input type="file" name="file"/> <input type="submit" value="Upload">
+            </form>
+        </div>
         {% endfor %}
-
-        <form action="/add_comment/{{ item.id }}" method="POST">
-            <label for="content">Add a Comment:</label><br>
-            <textarea name="content" rows="3" required></textarea><br>
-            <input type="submit" value="Post Comment">
-        </form>
-
-        <form action = "/add_image/{{ item.id }}" method = "post" enctype="multipart/form-data">
-            <input type="file" name="file" />
-            <input type = "submit" value="Upload">
-        </form>
     </div>
-    {% endfor %}
-
-    <hr>
-    <h3>Vintage Clothing Menu</h3>
+    <div id="collage-area"
+         style="min-height: 500px; border: 2px dashed #ccc; margin-left: 20px; padding: 10px; resize:both;overflow:auto;">
+        <h3>🎨 Collage Area</h3>
+        <p>Drag images here to make your collage.</p>
+    </div>
+</div>
+<div>
+    <hr/>
     <nav>
         <a href="/">🏠 Home</a> |
         <a href="/data/postings/upload"> Image Upload</a> |
         <a href="/postings">🧺 Postings</a> |
-         <a href="/data/postings/add">🔄 Add Sample Data</a> |
+        <a href="/data/postings/add">🔄 Add Sample Data</a> |
         <a href="/data/postings/delete">❌ Delete All Data</a>
     </nav>
+</div>
 </body>
+<script>
+    function drag(ev) {
+      ev.dataTransfer.setData("text", ev.target.getAttribute('data-img-src'));
+    }
+
+    document.getElementById('collage-area').addEventListener('dragover', function(ev) {
+      ev.preventDefault();
+    });
+
+    document.getElementById('collage-area').addEventListener('drop', function(ev) {
+      ev.preventDefault();
+      const imgSrc = ev.dataTransfer.getData("text");
+      const img = document.createElement("img");
+      img.src = imgSrc;
+      img.style.maxWidth = "100px";
+      img.style.margin = "5px";
+      img.style.cursor = "move";
+      img.setAttribute("draggable", "true");
+      this.appendChild(img);
+    });
+
+        document.addEventListener("DOMContentLoaded", () => {
+      const sizes = ['100px', '150px', '200px', '250px', '300px'];
+      document.querySelectorAll('.random-size').forEach(img => {
+        const randomSize = sizes[Math.floor(Math.random() * sizes.length)];
+        img.style.maxWidth = randomSize;
+      });
+    });
+</script>
 </html>
