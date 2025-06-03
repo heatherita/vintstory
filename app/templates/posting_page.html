@@ -8,10 +8,30 @@
         form { max-width: 500px; }
         label { font-weight: bold; }
 
-        .draggable-img {
-            cursor: grab;
-            transition: transform 0.2s ease;
-        }
+<!--        .draggable-img {-->
+<!--&lt;!&ndash;            cursor: grab;&ndash;&gt;-->
+<!--&lt;!&ndash;            transition: transform 0.2s ease;&ndash;&gt;-->
+
+<!--             cursor: grab;-->
+<!--    border: 3px solid #e0cfc1;-->
+<!--    box-shadow: 4px 4px 8px rgba(0,0,0,0.3);-->
+<!--    border-radius: 6px;-->
+<!--    padding: 4px;-->
+<!--    background-color: #fdfaf6;-->
+<!--    position: absolute;-->
+<!--    transform-origin: center;-->
+<!--        }-->
+
+        .collage-img {
+    border: 3px solid #e0cfc1;
+    box-shadow: 4px 4px 8px rgba(0,0,0,0.3);
+    border-radius: 6px;
+    padding: 4px;
+    background-color: #fdfaf6;
+    transform-origin: center;
+    position: absolute;
+    transition: box-shadow 0.2s ease;
+}
         .draggable-img:active {
             cursor: grabbing;
             transform: scale(1.03);
@@ -89,7 +109,7 @@
         {% endfor %}
     </div>
     <div id="collage-area"
-         style="min-height: 500px; border: 2px dashed #ccc; margin-left: 20px; padding: 10px; resize:both;overflow:auto;">
+        style="position: relative; min-height: 500px; border: 2px dashed #ccc; margin-left: 20px; padding: 10px; resize:both;overflow:auto;">
         <h3>🎨 Collage Area</h3>
         <p>Drag images here to make your collage.</p>
     </div>
@@ -119,19 +139,57 @@
       const imgSrc = ev.dataTransfer.getData("text");
       const img = document.createElement("img");
       img.src = imgSrc;
-      img.style.maxWidth = "100px";
-      img.style.margin = "5px";
-      img.style.cursor = "move";
-      img.setAttribute("draggable", "true");
-      this.appendChild(img);
+    img.className = "collage-img";
+    img.style.position = "absolute";
+    img.style.maxWidth = "150px";
+    img.style.left = Math.floor(Math.random() * 10) + "%";
+    img.style.top = Math.floor(Math.random() * 10) + "%";
+    img.style.zIndex = Date.now(); // newer images on top
+     img.style.cursor = "grab";
+    img.setAttribute("draggable", "false");
+     makeMovable(img);  // 👈 Add this line
+    this.appendChild(img);
     });
+
+    function makeMovable(element) {
+    let isDragging = false;
+    let offsetX, offsetY;
+
+    element.addEventListener('mousedown', function(e) {
+        isDragging = true;
+        offsetX = e.clientX - element.getBoundingClientRect().left;
+        offsetY = e.clientY - element.getBoundingClientRect().top;
+        element.style.cursor = 'grabbing';
+    });
+
+    document.addEventListener('mousemove', function(e) {
+        if (isDragging) {
+            const collageRect = document.getElementById('collage-area').getBoundingClientRect();
+            let x = e.clientX - collageRect.left - offsetX;
+            let y = e.clientY - collageRect.top - offsetY;
+            element.style.left = `${x}px`;
+            element.style.top = `${y}px`;
+        }
+    });
+
+    document.addEventListener('mouseup', function() {
+        isDragging = false;
+        element.style.cursor = 'grab';
+    });
+}
+
 
         document.addEventListener("DOMContentLoaded", () => {
       const sizes = ['100px', '150px', '200px', '250px', '300px'];
+<!--      const rotations = ['-3deg', '-2deg', '0deg', '2deg', '3deg'];-->
       document.querySelectorAll('.random-size').forEach(img => {
         const randomSize = sizes[Math.floor(Math.random() * sizes.length)];
         img.style.maxWidth = randomSize;
-      });
     });
+
+<!--        // Apply random rotation-->
+<!--    const randomRotation = rotations[Math.floor(Math.random() * rotations.length)];-->
+<!--    img.style.transform = `rotate(${randomRotation})`;-->
+      });
 </script>
 </html>
