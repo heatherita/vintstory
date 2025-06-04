@@ -41,6 +41,17 @@
             padding: 8px;
             box-sizing: border-box;
         }
+
+        #collage-area {
+        position: fixed;
+        right:100px;
+        top: 20px;
+        min-height: 500px;
+        border: 2px dashed #ccc;
+        padding: 10px;
+        resize:both;overflow:auto;
+        }
+
         textarea {
             width: 100%;
         }
@@ -110,9 +121,8 @@
         </div>
         {% endfor %}
     </div>
-    <div id="collage-area"
-        style="position: fixed; right:100px; top: 20px; min-height: 500px; border: 2px dashed #ccc; padding: 10px; resize:both;overflow:auto;">
-        <h3>🎨 Collage Area</h3>
+    <div id="collage-area">
+          <h3>🎨 Collage Area</h3>
         <p>Drag images here to make your collage.</p>
     </div>
 </div>
