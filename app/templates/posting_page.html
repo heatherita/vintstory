@@ -70,7 +70,9 @@
     <div style="flex: 1;">
         {% for item in items %}
 
-        <div class="posting">
+        <div class="posting"
+
+        >
             <h2>{{ item.title }}</h2>
             <img src="{{ url_for('static', filename='images/' + item.image_url) }}"
                  alt="{{ item.title }}"
@@ -109,7 +111,7 @@
         {% endfor %}
     </div>
     <div id="collage-area"
-        style="position: relative; min-height: 500px; border: 2px dashed #ccc; margin-left: 20px; padding: 10px; resize:both;overflow:auto;">
+        style="position: fixed; right:100px; top: 20px; min-height: 500px; border: 2px dashed #ccc; padding: 10px; resize:both;overflow:auto;">
         <h3>🎨 Collage Area</h3>
         <p>Drag images here to make your collage.</p>
     </div>
@@ -134,6 +136,20 @@
       ev.preventDefault();
     });
 
+
+    document.getElementById('collage-area').addEventListener('resize', function(ev) {
+      ev.preventDefault();
+      //const imgSrc = ev.dataTransfer.getData("text");
+      const para = document.createElement("p");
+    para.innerText = "This is a paragraph";
+    //para.style.position = "relative";
+    para.style.maxWidth = "150px";
+    para.style.right = "10%";
+    para.style.bottom = "20%";
+    para.style.zIndex = Date.now(); // newer images on top
+    this.appendChild(para);
+    });
+
     document.getElementById('collage-area').addEventListener('drop', function(ev) {
       ev.preventDefault();
       const imgSrc = ev.dataTransfer.getData("text");
@@ -142,8 +158,8 @@
     img.className = "collage-img";
     img.style.position = "absolute";
     img.style.maxWidth = "150px";
-    img.style.left = Math.floor(Math.random() * 10) + "%";
-    img.style.top = Math.floor(Math.random() * 10) + "%";
+    img.style.left = Math.floor(Math.random() * 70) + "%";
+    img.style.top = Math.floor(Math.random() * 70) + "%";
     img.style.zIndex = Date.now(); // newer images on top
      img.style.cursor = "grab";
     img.setAttribute("draggable", "false");

@@ -4,6 +4,7 @@ import os
 from blueprints.listings import listings_bp
 from blueprints.postings import postings_bp
 from blueprints.comments import comments_bp
+from blueprints.collage import collage_bp
 
 def create_app():
     app = Flask(__name__)
@@ -18,6 +19,7 @@ def create_app():
     app.register_blueprint(listings_bp)
     app.register_blueprint(postings_bp)
     app.register_blueprint(comments_bp)
+    app.register_blueprint(collage_bp)
 
     with app.app_context():
 #       db.drop_all()
