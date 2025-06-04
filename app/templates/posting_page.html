@@ -119,14 +119,21 @@
     </nav>
 </div>
 <script src="{{ url_for('static', filename='react/static/js/453.85167f78.chunk.js') }}"></script>
+<script src="{{ url_for('static', filename='react/static/js/main.2e346f8b.js') }}"></script>
 <script src="{{ url_for('static', filename='react/static/js/main.4764b414.js') }}"></script>
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-    const collageRoot = document.getElementById("react-collage-root");
+    const collageRoot = document.getElementById("root");
     if (collageRoot && window.Collage) {
       ReactDOM.createRoot(collageRoot).render(React.createElement(Collage));
     }
+
+    const sizes = ['100px', '150px', '200px', '250px', '300px'];
+      document.querySelectorAll('.random-size').forEach(img => {
+        const randomSize = sizes[Math.floor(Math.random() * sizes.length)];
+        img.style.maxWidth = randomSize;
+    });
   });
 
     function drag(ev) {
@@ -168,43 +175,43 @@
 <!--    this.appendChild(img);-->
 <!--    });-->
 
-    function makeMovable(element) {
-    let isDragging = false;
-    let offsetX, offsetY;
+<!--    function makeMovable(element) {-->
+<!--    let isDragging = false;-->
+<!--    let offsetX, offsetY;-->
 
-    element.addEventListener('mousedown', function(e) {
-        isDragging = true;
-        offsetX = e.clientX - element.getBoundingClientRect().left;
-        offsetY = e.clientY - element.getBoundingClientRect().top;
-        element.style.cursor = 'grabbing';
-    });
+<!--    element.addEventListener('mousedown', function(e) {-->
+<!--        isDragging = true;-->
+<!--        offsetX = e.clientX - element.getBoundingClientRect().left;-->
+<!--        offsetY = e.clientY - element.getBoundingClientRect().top;-->
+<!--        element.style.cursor = 'grabbing';-->
+<!--    });-->
 
-    document.addEventListener('mousemove', function(e) {
-        if (isDragging) {
-            const collageRect = document.getElementById('collage-area').getBoundingClientRect();
-            let x = e.clientX - collageRect.left - offsetX;
-            let y = e.clientY - collageRect.top - offsetY;
-            element.style.left = `${x}px`;
-            element.style.top = `${y}px`;
-        }
-    });
+<!--    document.addEventListener('mousemove', function(e) {-->
+<!--        if (isDragging) {-->
+<!--            const collageRect = document.getElementById('collage-area').getBoundingClientRect();-->
+<!--            let x = e.clientX - collageRect.left - offsetX;-->
+<!--            let y = e.clientY - collageRect.top - offsetY;-->
+<!--            element.style.left = `${x}px`;-->
+<!--            element.style.top = `${y}px`;-->
+<!--        }-->
+<!--    });-->
 
-    document.addEventListener('mouseup', function() {
-        isDragging = false;
-        element.style.cursor = 'grab';
-    });
-}
-        document.addEventListener("DOMContentLoaded", () => {
-      const sizes = ['100px', '150px', '200px', '250px', '300px'];
-      document.querySelectorAll('.random-size').forEach(img => {
-        const randomSize = sizes[Math.floor(Math.random() * sizes.length)];
-        img.style.maxWidth = randomSize;
-    });
+<!--    document.addEventListener('mouseup', function() {-->
+<!--        isDragging = false;-->
+<!--        element.style.cursor = 'grab';-->
+<!--    });-->
+<!--}-->
+<!--        document.addEventListener("DOMContentLoaded", () => {-->
+<!--      const sizes = ['100px', '150px', '200px', '250px', '300px'];-->
+<!--      document.querySelectorAll('.random-size').forEach(img => {-->
+<!--        const randomSize = sizes[Math.floor(Math.random() * sizes.length)];-->
+<!--        img.style.maxWidth = randomSize;-->
+<!--    });-->
 
 <!--        // Apply random rotation-->
 <!--    const randomRotation = rotations[Math.floor(Math.random() * rotations.length)];-->
 <!--    img.style.transform = `rotate(${randomRotation})`;-->
-      });
+<!--      });-->
 </script>
 </body>
 </html>

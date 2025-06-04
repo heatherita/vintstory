@@ -1,9 +1,12 @@
 import React, { useRef, useState, useEffect } from 'react';
 
+
 export default function CollageArea() {
   const collageRef = useRef(null);
   const [images, setImages] = useState([]);
   const [tooltipVisible, setTooltipVisible] = useState(false);
+  const [draggingId, setDraggingId] = useState(null);
+const [dragOffset, setDragOffset] = useState({x: 0, y: 0});
 
   useEffect(() => {
     const handleDrop = (e) => {
@@ -31,6 +34,36 @@ export default function CollageArea() {
       collage.removeEventListener('dragover', handleDragOver);
     };
   }, []);
+
+  // Add global event listeners in useEffect:
+useEffect(() => {
+  function handleMouseMove(e) {
+    if (draggingId !== null) {
+      setImages(currentImages =>
+        currentImages.map(img =>
+          img.id === draggingId
+            ? {
+                ...img,
+                left: `${e.clientX - dragOffset.x - collageRef.current.getBoundingClientRect().left}px`,
+                top: `${e.clientY - dragOffset.y - collageRef.current.getBoundingClientRect().top}px`,
+              }
+            : img
+        )
+      );
+    }
+  }
+  function handleMouseUp() {
+    setDraggingId(null);
+  }
+  if (draggingId !== null) {
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseup', handleMouseUp);
+  }
+  return () => {
+    window.removeEventListener('mousemove', handleMouseMove);
+    window.removeEventListener('mouseup', handleMouseUp);
+  };
+}, [draggingId, dragOffset]);
 
   const showTooltip = () => {
     setTooltipVisible(true);
@@ -67,9 +100,17 @@ export default function CollageArea() {
             left: img.left,
             top: img.top,
             zIndex: img.id,
-            cursor: 'grab'
+            cursor: draggingId === img.id ? 'grabbing' : 'grab'
           }}
           draggable={false}
+          onMouseDown={e => {
+  setDraggingId(img.id);
+  const rect = e.target.getBoundingClientRect();
+  setDragOffset({
+    x: e.clientX - rect.left,
+    y: e.clientY - rect.top,
+  });
+}}
         />
       ))}
       {tooltipVisible && (
