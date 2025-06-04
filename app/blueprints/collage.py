@@ -12,7 +12,7 @@ def index():
 
 @collage_bp.route('/collage')
 def collage():
-    return render_template('collage_embed.html')
+    return send_from_directory('static/react', 'index.html')
 
 @collage_bp.route('/static/<path:path>')
 def serve_static(path):
