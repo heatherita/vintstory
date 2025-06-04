@@ -8,20 +8,6 @@
         form { max-width: 500px; }
         label { font-weight: bold; }
 
-<!--        .draggable-img {-->
-<!--&lt;!&ndash;            cursor: grab;&ndash;&gt;-->
-<!--&lt;!&ndash;            transition: transform 0.2s ease;&ndash;&gt;-->
-
-<!--             cursor: grab;-->
-<!--    border: 3px solid #e0cfc1;-->
-<!--    box-shadow: 4px 4px 8px rgba(0,0,0,0.3);-->
-<!--    border-radius: 6px;-->
-<!--    padding: 4px;-->
-<!--    background-color: #fdfaf6;-->
-<!--    position: absolute;-->
-<!--    transform-origin: center;-->
-<!--        }-->
-
         .collage-img {
     border: 3px solid #e0cfc1;
     box-shadow: 4px 4px 8px rgba(0,0,0,0.3);
@@ -80,10 +66,7 @@
 <div style="display: inline-flex;">
     <div style="flex: 1;">
         {% for item in items %}
-
-        <div class="posting"
-
-        >
+        <div class="posting">
             <h2>{{ item.title }}</h2>
             <img src="{{ url_for('static', filename='images/' + item.image_url) }}"
                  alt="{{ item.title }}"
@@ -122,8 +105,7 @@
         {% endfor %}
     </div>
     <div id="collage-area">
-          <h3>🎨 Collage Area</h3>
-        <p>Drag images here to make your collage.</p>
+       <div id="root"></div>
     </div>
 </div>
 <div>
@@ -136,46 +118,55 @@
         <a href="/data/postings/delete">❌ Delete All Data</a>
     </nav>
 </div>
-</body>
+<script src="{{ url_for('static', filename='react/static/js/453.85167f78.chunk.js') }}"></script>
+<script src="{{ url_for('static', filename='react/static/js/main.4764b414.js') }}"></script>
+
 <script>
+    document.addEventListener("DOMContentLoaded", function() {
+    const collageRoot = document.getElementById("react-collage-root");
+    if (collageRoot && window.Collage) {
+      ReactDOM.createRoot(collageRoot).render(React.createElement(Collage));
+    }
+  });
+
     function drag(ev) {
       ev.dataTransfer.setData("text", ev.target.getAttribute('data-img-src'));
     }
 
-    document.getElementById('collage-area').addEventListener('dragover', function(ev) {
-      ev.preventDefault();
-    });
+<!--    document.getElementById('collage-area').addEventListener('dragover', function(ev) {-->
+<!--      ev.preventDefault();-->
+<!--    });-->
 
 
-    document.getElementById('collage-area').addEventListener('resize', function(ev) {
-      ev.preventDefault();
-      //const imgSrc = ev.dataTransfer.getData("text");
-      const para = document.createElement("p");
-    para.innerText = "This is a paragraph";
-    //para.style.position = "relative";
-    para.style.maxWidth = "150px";
-    para.style.right = "10%";
-    para.style.bottom = "20%";
-    para.style.zIndex = Date.now(); // newer images on top
-    this.appendChild(para);
-    });
+<!--    document.getElementById('collage-area').addEventListener('resize', function(ev) {-->
+<!--    ev.preventDefault();-->
+<!--    //const imgSrc = ev.dataTransfer.getData("text");-->
+<!--    const para = document.createElement("p");-->
+<!--    para.innerText = "This is a paragraph";-->
+<!--    //para.style.position = "relative";-->
+<!--    para.style.maxWidth = "150px";-->
+<!--    para.style.right = "10%";-->
+<!--    para.style.bottom = "20%";-->
+<!--    para.style.zIndex = Date.now(); // newer images on top-->
+<!--    this.appendChild(para);-->
+<!--    });-->
 
-    document.getElementById('collage-area').addEventListener('drop', function(ev) {
-      ev.preventDefault();
-      const imgSrc = ev.dataTransfer.getData("text");
-      const img = document.createElement("img");
-      img.src = imgSrc;
-    img.className = "collage-img";
-    img.style.position = "absolute";
-    img.style.maxWidth = "150px";
-    img.style.left = Math.floor(Math.random() * 70) + "%";
-    img.style.top = Math.floor(Math.random() * 70) + "%";
-    img.style.zIndex = Date.now(); // newer images on top
-     img.style.cursor = "grab";
-    img.setAttribute("draggable", "false");
-     makeMovable(img);  // 👈 Add this line
-    this.appendChild(img);
-    });
+<!--    document.getElementById('collage-area').addEventListener('drop', function(ev) {-->
+<!--      ev.preventDefault();-->
+<!--      const imgSrc = ev.dataTransfer.getData("text");-->
+<!--      const img = document.createElement("img");-->
+<!--      img.src = imgSrc;-->
+<!--    img.className = "collage-img";-->
+<!--    img.style.position = "absolute";-->
+<!--    img.style.maxWidth = "150px";-->
+<!--    img.style.left = Math.floor(Math.random() * 70) + "%";-->
+<!--    img.style.top = Math.floor(Math.random() * 70) + "%";-->
+<!--    img.style.zIndex = Date.now(); // newer images on top-->
+<!--     img.style.cursor = "grab";-->
+<!--    img.setAttribute("draggable", "false");-->
+<!--     makeMovable(img);  // 👈 Add this line-->
+<!--    this.appendChild(img);-->
+<!--    });-->
 
     function makeMovable(element) {
     let isDragging = false;
@@ -203,11 +194,8 @@
         element.style.cursor = 'grab';
     });
 }
-
-
         document.addEventListener("DOMContentLoaded", () => {
       const sizes = ['100px', '150px', '200px', '250px', '300px'];
-<!--      const rotations = ['-3deg', '-2deg', '0deg', '2deg', '3deg'];-->
       document.querySelectorAll('.random-size').forEach(img => {
         const randomSize = sizes[Math.floor(Math.random() * sizes.length)];
         img.style.maxWidth = randomSize;
@@ -218,4 +206,5 @@
 <!--    img.style.transform = `rotate(${randomRotation})`;-->
       });
 </script>
+</body>
 </html>
