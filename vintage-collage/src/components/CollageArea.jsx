@@ -41,25 +41,27 @@ export default function CollageArea() {
 
   // Add global event listeners in useEffect:
  useEffect(() => {
-    function handleMouseMove(e) {
-      if (draggingId !== null) {
-           console.log('Dragging:', draggingId, 'Mouse:', e.clientX, e.clientY, 'Offset:', dragOffset);
 
-          var currentItems =
-          currentItems.map(item =>
-            item.id === draggingId
-              ? {
-                  ...item,
-                  left: `${e.clientX - dragOffset.x - collageRef.current.getBoundingClientRect().left}px`,
-                  top: `${e.clientY - dragOffset.y - collageRef.current.getBoundingClientRect().top}px`,
-                }
-              : item
-          );
-        console.log('Updated items:', currentItems);
-        setItems(currentItems
-        );
-      }
-    }
+function handleMouseMove(e) {
+  if (draggingId !== null) {
+    setItems(currentItems => {
+      // Define a function that closes over e, dragOffset, etc.
+      const updateItemPosition = (item) =>
+        item.id === draggingId
+          ? {
+              ...item,
+              left: `${e.clientX - dragOffset.x - collageRef.current.getBoundingClientRect().left}px`,
+              top: `${e.clientY - dragOffset.y - collageRef.current.getBoundingClientRect().top}px`,
+            }
+          : item;
+
+      const newItems = currentItems.map(updateItemPosition);
+      console.log('Updated items:', newItems);
+      return newItems;
+    });
+  }
+}
+
   function handleMouseUp() {
     setDraggingId(null);
   }
