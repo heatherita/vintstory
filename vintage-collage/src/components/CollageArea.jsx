@@ -111,6 +111,31 @@ useEffect(() => {
     y: e.clientY - rect.top,
   });
 }}
+// {texts.map((text) => (
+//   <div
+//     key={text.id}
+//     style={{
+//       border: "1px solid #ccc",
+//       position: 'absolute',
+//             maxWidth: '150px',
+//             left: img.left,
+//             top: img.top,
+//             zIndex: img.id,
+//             cursor: draggingId === img.id ? 'grabbing' : 'grab'
+//     }}
+// draggable={false}
+//           onMouseDown={e => {
+//   setDraggingId(img.id);
+//   const rect = e.target.getBoundingClientRect();
+//   setDragOffset({
+//     x: e.clientX - rect.left,
+//     y: e.clientY - rect.top,
+//   });
+//   >
+//     {text.content}
+//   </div>
+// ))}
+
         />
       ))}
       {tooltipVisible && (
