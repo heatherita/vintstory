@@ -65,9 +65,9 @@
                  draggable="true"
                  ondragstart="drag(event)"
                  data-img-src="{{ url_for('static', filename='images/uploads/' + item.image_url) }}">
-                <div className="draggable-text random-size" draggable="true" ondragstart="drag(event)" id="descText"><strong>Description:</strong> {{ item.description }} |</div>
-                <div className="draggable-text random-size" draggable="true" ondragstart="drag(event)" id="storyText"><strong>Story:</strong> {{ item.story }} <strong> |</div>
-                <div className="draggable-text random-size" draggable="true" ondragstart="drag(event)" id="userText"><strong></strong>User:</strong> <a href="mailto:{{ item.user_contact }}">{{
+                <div class="draggable-text random-size" draggable="true" ondragstart="drag(event)" id="descText"><strong>Description:</strong> {{ item.description }} |</div>
+                <div class="draggable-text random-size" draggable="true" ondragstart="drag(event)" id="storyText"><strong>Story:</strong> {{ item.story }} <strong> |</div>
+                <div class="draggable-text random-size" draggable="true" ondragstart="drag(event)" id="userText"><strong></strong>User:</strong> <a href="mailto:{{ item.user_contact }}">{{
                     item.user_name }}</a></div>
             <h4>Comments:</h4>
             {% for comment in item.comments %}
@@ -110,9 +110,7 @@
         <a href="/data/postings/delete">❌ Delete All Data</a>
     </nav>
 </div>
-<!--<script src="{{ url_for('static', filename='react/static/js/453.85167f78.chunk.js') }}"></script>-->
-<script src="{{ url_for('static', filename='react/static/js/main.2e346f8b.js') }}"></script>
-<!--<script src="{{ url_for('static', filename='react/static/js/main.4764b414.js') }}"></script>-->
+<script src="{{ url_for('static', filename='react/static/js/main.a057eac2.js') }}"></script>
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
@@ -125,7 +123,13 @@
   });
 
     function drag(ev) {
-      ev.dataTransfer.setData("text", ev.target.getAttribute('data-img-src'));
+      let data = {};
+    if (ev.target.classList.contains('draggable-img')) {
+      data = { type: 'image', src: ev.target.getAttribute('data-img-src') };
+    } else if (ev.target.classList.contains('draggable-text')) {
+      data = { type: 'text', content: ev.target.textContent };
+    }
+    ev.dataTransfer.setData('application/json', JSON.stringify(data));
     }
 
 </script>
