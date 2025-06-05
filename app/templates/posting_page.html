@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns="http://www.w3.org/1999/html">
 <head>
     <meta charset="UTF-8">
     <title>Vintage Story Market</title>
@@ -19,7 +19,7 @@
         position: absolute;
         transition: box-shadow 0.2s ease;
         }
-        .draggable-img:active {
+        .draggable-img:active,.draggable-text:active {
             cursor: grabbing;
             transform: scale(1.03);
         }
@@ -59,15 +59,16 @@
         {% for item in items %}
         <div class="posting">
             <h2>{{ item.title }}</h2>
-            <img src="{{ url_for('static', filename='images/' + item.image_url) }}"
+            <img src="{{ url_for('static', filename='images/uploads/' + item.image_url) }}"
                  alt="{{ item.title }}"
                  class="draggable-img random-size"
                  draggable="true"
                  ondragstart="drag(event)"
-                 data-img-src="{{ url_for('static', filename='images/' + item.image_url) }}">
-            <p><strong>Description:</strong> {{ item.description }} | <strong>Story:</strong> {{ item.story }} <strong>
-                | User:</strong> <a href="mailto:{{ item.user_contact }}">{{ item.user_name }}</a></p>
-
+                 data-img-src="{{ url_for('static', filename='images/uploads/' + item.image_url) }}">
+                <div className="draggable-text random-size" draggable="true" ondragstart="drag(event)" id="descText"><strong>Description:</strong> {{ item.description }} |</div>
+                <div className="draggable-text random-size" draggable="true" ondragstart="drag(event)" id="storyText"><strong>Story:</strong> {{ item.story }} <strong> |</div>
+                <div className="draggable-text random-size" draggable="true" ondragstart="drag(event)" id="userText"><strong></strong>User:</strong> <a href="mailto:{{ item.user_contact }}">{{
+                    item.user_name }}</a></div>
             <h4>Comments:</h4>
             {% for comment in item.comments %}
             <div>
@@ -78,7 +79,7 @@
                      ondragstart="drag(event)"
                      data-img-src="{{ url_for('static', filename='images/uploads/' + comment.image_url) }}">
                 <br/>
-                {{ comment.content }}
+                <div class="draggable-text random-size" draggable="true" ondragstart="drag(event)">{{ comment.content }}</div>
                 {% if comment.created_at %}
                 <small><strong>Posted on {{ comment.created_at.strftime('%Y-%m-%d %H:%M') }}</strong></small>
                 {% endif %}
@@ -96,7 +97,7 @@
         {% endfor %}
     </div>
     <div id="collage-area">
-       <div id="root"></div>
+        <div id="root"></div>
     </div>
 </div>
 <div>
