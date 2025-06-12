@@ -126,8 +126,6 @@
       let data = {};
     if (ev.target.classList.contains('draggable-img')) {
       data = { type: 'image', src: ev.target.getAttribute('data-img-src') };
-    } else if (ev.target.classList.contains('draggable-text')) {
-      data = { type: 'text', content: ev.target.textContent };
     }
     ev.dataTransfer.setData('application/json', JSON.stringify(data));
     }

@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, current_app
+from flask import Blueprint, render_template, request, redirect, jsonify, current_app
 from models.posting import Posting
 from models.comment import Comment
 from models.data_helper import DataHelper
@@ -10,10 +10,12 @@ postings_bp = Blueprint('postings', __name__)
 def index():
     return render_template('index.html')
 
-@postings_bp.route('/postings', methods=['GET'])
+@postings_bp.route('/api/postings', methods=['GET'])
 def postings():
     items = Posting.query.all()
-    return render_template('posting_page.html', items=items)
+    for item in items:
+        print('item: ', item);
+    return jsonify(items)
 
 @postings_bp.route('/add', methods=['GET', 'POST'])
 def add_item():

@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, send_from_directory
 from models import db
 import os
 from blueprints.listings import listings_bp
@@ -22,6 +22,11 @@ def create_app():
     with app.app_context():
 #       db.drop_all()
         db.create_all()
+
+    @app.route('/', defaults={'path': ''})
+    @app.route('/<path:path>')
+    def catch_all(path):
+        return send_from_directory('static/react/dist', 'index.html')
 
     return app
 
