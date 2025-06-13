@@ -9,11 +9,32 @@ export default function CollageArea() {
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
 
 
-   console.log('creating collage area');
+useEffect(() => {
+    fetch('/api/postings')
+      .then(res => res.json())
+      .then(data => setItems(data))
+  }, []);
+
+  console.log('creating collage area');
+//   useEffect(() => {
+//     const handleDrop = (e) => {
+//       e.preventDefault();
+//       const imgSrc = e.dataTransfer.getData('text');
+//       const newImage = {
+//         src: imgSrc,
+//         left: Math.floor(Math.random() * 70) + '%',
+//         top: Math.floor(Math.random() * 70) + '%',
+//         id: Date.now()
+//       };
+//       setImages(prev => [...prev, newImage]);
+//     };
   useEffect(() => {
     const handleDrop = (e) => {
       e.preventDefault();
       const data = e.dataTransfer.getData('application/json');
+      //const data = e.dataTransfer.getData('text');
+      console.log('dropped data is', data);
+      console.log('dropped data type is', data.img);
       if (!data) return;
       const parsed = JSON.parse(data);
       const newItem = {
@@ -75,16 +96,50 @@ function handleMouseMove(e) {
   };
 }, [draggingId, dragOffset]);
 
+function drag(e, item) {
+  let data = {};
+  if (e.target.classList.contains('draggable-img')) {
+    data = { type: 'image', src: item.src };
+   } else if (e.target.classList.contains('draggable-text')) {
+    data = { type: 'text', content: item.content };
+  }
+  e.dataTransfer.setData('application/json', JSON.stringify(data));
+}
+
+
   const showTooltip = () => {
     setTooltipVisible(true);
     setTimeout(() => setTooltipVisible(false), 1500);
   };
 
- const renderItem = (item) => (
+  const renderItem = (item) => (
+          <div className="posting" key={item.id}>
+            <h2>{item.title}</h2>
+            <img src={`/static/uploads/${item.image_url}`}
+                 alt={item.title}
+                 class="draggable-img random-size"
+                 draggable={true}
+                 onDragStart={e => drag(e, item)}
+                data-img-src={`/static/uploads/${item.image_url}`}
+            />
+                <div id="descText" draggable={true} onDragStart={e => drag(e, item)}><strong>Description:</strong> {item.description} |</div>
+                <div id="storyText" draggable={true} onDragStart={e => drag(e, item)}><strong>Story:</strong> {item.story} |</div>
+                <div id="userText" draggable={true} onDragStart={e => drag(e, item)}><strong>User:</strong> <a href={`mailto:${item.user_contact}`}>{item.user_name}</a></div>
+      </div>
+      );
+  console.log('renderItem:', renderItem);
+  //console.log('item type:', item.type);
+
+  const renderedItems = items.map(renderItem);
+    console.log('renderedItems:', renderedItems);
+    //console.log('items:', items);
+
+ const collageItem = (item) => (
         item.type === 'image' ? (
           <img
+            type={item.type}
             key={item.id}
-            src={item.src}
+            src={`/static/uploads/${item.image_url}`}
             className="collage-img"
             style={{
               position: 'absolute',
@@ -107,6 +162,7 @@ function handleMouseMove(e) {
         ) : (
           <div
             key={item.id}
+             type={item.type}
             className="collage-img collage-text"
             style={{
               position: 'absolute',
@@ -133,7 +189,7 @@ function handleMouseMove(e) {
           </div>
         )
       );
-  console.log('renderItem:', renderItem);
+  console.log('collageItem:', collageItem);
 
   const toolTipItem = <div
           style={{
@@ -150,11 +206,16 @@ function handleMouseMove(e) {
           Resizing collage...
         </div>;
 
-   const renderedItems = items.map(renderItem);
-    console.log('renderedItems:', renderedItems);
+   const collageItems = items.map(collageItem);
+    console.log('collageItems:', collageItems);
     //console.log('items:', items);
 
   return (
+      <div style={{display: 'inline-flex'}}>
+      <div style={{flex: '1'}}>
+        <p>Rendered Items.</p>
+      {renderedItems}
+    </div>
     <div
       id="collage-area"
       ref={collageRef}
@@ -173,8 +234,12 @@ function handleMouseMove(e) {
     >
       <h3>🎨 Collage Area</h3>
       <p>Drag images or text here to make your collage.</p>
-      {renderedItems}
+      {collageItems}
       {tooltipVisible && toolTipItem}
+      {items.map(item => (
+      <div>item type is {item.type}</div>
+       ))}
+    </div>
     </div>
   );
 }
