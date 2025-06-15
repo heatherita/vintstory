@@ -3,8 +3,9 @@ import React, { useRef, useState, useEffect } from 'react';
 
 export default function CollageArea() {
  const collageRef = useRef(null);
-  const [items, setItems] = useState([]); // Unified array for img and text
   const [tooltipVisible, setTooltipVisible] = useState(false);
+  const [items, setItems] = useState([]); // Unified array for img and text
+  const [movedItems, setMovedItems] = useState([]); // Unified array for img and text
   const [draggingId, setDraggingId] = useState(null);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
 
@@ -15,26 +16,19 @@ useEffect(() => {
       .then(data => setItems(data))
   }, []);
 
+  useEffect(() => {
+  const sizes = ['100px', '150px', '200px', '250px', '300px'];
+      document.querySelectorAll('.random-size').forEach(img => {
+        const randomSize = sizes[Math.floor(Math.random() * sizes.length)];
+        img.style.maxWidth = randomSize;
+    });
+}, []);
+
   console.log('creating collage area');
-//   useEffect(() => {
-//     const handleDrop = (e) => {
-//       e.preventDefault();
-//       const imgSrc = e.dataTransfer.getData('text');
-//       const newImage = {
-//         src: imgSrc,
-//         left: Math.floor(Math.random() * 70) + '%',
-//         top: Math.floor(Math.random() * 70) + '%',
-//         id: Date.now()
-//       };
-//       setImages(prev => [...prev, newImage]);
-//     };
   useEffect(() => {
     const handleDrop = (e) => {
       e.preventDefault();
       const data = e.dataTransfer.getData('application/json');
-      //const data = e.dataTransfer.getData('text');
-      console.log('dropped data is', data);
-      console.log('dropped data type is', data.img);
       if (!data) return;
       const parsed = JSON.parse(data);
       const newItem = {
@@ -43,7 +37,9 @@ useEffect(() => {
         top: Math.floor(Math.random() * 70) + '%',
         id: Date.now() + Math.random()
       };
-      setItems(prev => [...prev, newItem]);
+      setMovedItems(prev => [...prev, newItem]);
+      //collageItems.map(newItem);
+      //return collageItems;
     };
 
     const handleDragOver = (e) => {
@@ -65,7 +61,7 @@ useEffect(() => {
 
 function handleMouseMove(e) {
   if (draggingId !== null) {
-    setItems(currentItems => {
+    setMovedItems(currentItems => {
       // Define a function that closes over e, dragOffset, etc.
       const updateItemPosition = (item) =>
         item.id === draggingId
@@ -76,8 +72,8 @@ function handleMouseMove(e) {
             }
           : item;
 
-      const newItems = currentItems.map(updateItemPosition);
-      console.log('Updated items:', newItems);
+      const newItems = movedItems.map(updateItemPosition);
+      //console.log('Updated items:', newItems);
       return newItems;
     });
   }
@@ -99,10 +95,11 @@ function handleMouseMove(e) {
 function drag(e, item) {
   let data = {};
   if (e.target.classList.contains('draggable-img')) {
-    data = { type: 'image', src: item.src };
+    data = { type: 'image', src: e.target.src };
    } else if (e.target.classList.contains('draggable-text')) {
-    data = { type: 'text', content: item.content };
+    data = { type: 'text', src: e.target.outerText };
   }
+   //console.log('dragging data', item, ' event is ', e);
   e.dataTransfer.setData('application/json', JSON.stringify(data));
 }
 
@@ -122,24 +119,22 @@ function drag(e, item) {
                  onDragStart={e => drag(e, item)}
                 data-img-src={`/static/uploads/${item.image_url}`}
             />
-                <div id="descText" draggable={true} onDragStart={e => drag(e, item)}><strong>Description:</strong> {item.description} |</div>
-                <div id="storyText" draggable={true} onDragStart={e => drag(e, item)}><strong>Story:</strong> {item.story} |</div>
-                <div id="userText" draggable={true} onDragStart={e => drag(e, item)}><strong>User:</strong> <a href={`mailto:${item.user_contact}`}>{item.user_name}</a></div>
+                <div id="descText" draggable={true} class="draggable-text" onDragStart={e => drag(e, item)}><strong>Description:</strong> {item.description} |</div>
+                <div id="storyText" draggable={true} class="draggable-text" onDragStart={e => drag(e, item)}><strong>Story:</strong> {item.story} |</div>
+                <div id="userText"><strong>User:</strong> <a href={`mailto:${item.user_contact}`}>{item.user_name}</a></div>
       </div>
       );
   console.log('renderItem:', renderItem);
-  //console.log('item type:', item.type);
 
   const renderedItems = items.map(renderItem);
     console.log('renderedItems:', renderedItems);
-    //console.log('items:', items);
 
  const collageItem = (item) => (
         item.type === 'image' ? (
           <img
             type={item.type}
             key={item.id}
-            src={`/static/uploads/${item.image_url}`}
+            src={item.src}
             className="collage-img"
             style={{
               position: 'absolute',
@@ -159,7 +154,8 @@ function drag(e, item) {
               });
             }}
           />
-        ) : (
+        ) :
+    (
           <div
             key={item.id}
              type={item.type}
@@ -185,11 +181,10 @@ function drag(e, item) {
               });
             }}
           >
-            {item.content}
+            {item.src}
           </div>
         )
       );
-  console.log('collageItem:', collageItem);
 
   const toolTipItem = <div
           style={{
@@ -206,9 +201,7 @@ function drag(e, item) {
           Resizing collage...
         </div>;
 
-   const collageItems = items.map(collageItem);
-    console.log('collageItems:', collageItems);
-    //console.log('items:', items);
+    const collageItems = movedItems.map(collageItem);
 
   return (
       <div style={{display: 'inline-flex'}}>
@@ -234,11 +227,8 @@ function drag(e, item) {
     >
       <h3>🎨 Collage Area</h3>
       <p>Drag images or text here to make your collage.</p>
-      {collageItems}
       {tooltipVisible && toolTipItem}
-      {items.map(item => (
-      <div>item type is {item.type}</div>
-       ))}
+      {collageItems}
     </div>
     </div>
   );
