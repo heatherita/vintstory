@@ -7,7 +7,7 @@ import os
 comments_bp = Blueprint('comments', __name__)
 #app = Flask(__name__)
 
-@comments_bp.route('/add_comment/<int:listing_id>', methods=['POST'])
+@comments_bp.route('/api/add_comment/<int:listing_id>', methods=['POST'])
 def add_comment_listing(listing_id):
     new_comment = Comment(
         content=request.form['content'],
@@ -27,7 +27,7 @@ def add_comment_posting(posting_id):
     db.session.commit()
     return redirect(f'/posting/{posting_id}')
 
-@comments_bp.route('/add_image/<int:posting_id>', methods=['GET', 'POST'])
+@comments_bp.route('/api/add_image/<int:posting_id>', methods=['GET', 'POST'])
 def file_upload(posting_id):
     if request.method == 'POST':
         f = request.files['file']
@@ -42,4 +42,4 @@ def file_upload(posting_id):
         db.session.add(new_comment)
         db.session.commit()
         #return send_from_directory(current_app.config['UPLOAD'], filename)
-    return redirect(f'/posting/{posting_id}')
+    return redirect(f'/api/posting/{posting_id}')

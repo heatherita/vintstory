@@ -34,9 +34,9 @@ def add_item():
         return redirect('/postings')
     return render_template('add_item.html')
 
-@postings_bp.route('/posting/<int:posting_id>')
+@postings_bp.route('/api/posting/<int:posting_id>')
 def show_posting(posting_id):
-    return redirect('/postings')  # Placeholder - update if you want detailed views
+    return redirect('/api/postings')  # Placeholder - update if you want detailed views
 
 @postings_bp.route('/data/postings/add')
 def add_data():

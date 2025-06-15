@@ -17,12 +17,13 @@ useEffect(() => {
   }, []);
 
   useEffect(() => {
+       if (items.length === 0) return;
   const sizes = ['100px', '150px', '200px', '250px', '300px'];
       document.querySelectorAll('.random-size').forEach(img => {
         const randomSize = sizes[Math.floor(Math.random() * sizes.length)];
         img.style.maxWidth = randomSize;
     });
-}, []);
+}, [items]);
 
   console.log('creating collage area');
   useEffect(() => {
@@ -122,6 +123,34 @@ function drag(e, item) {
                 <div id="descText" draggable={true} class="draggable-text" onDragStart={e => drag(e, item)}><strong>Description:</strong> {item.description} |</div>
                 <div id="storyText" draggable={true} class="draggable-text" onDragStart={e => drag(e, item)}><strong>Story:</strong> {item.story} |</div>
                 <div id="userText"><strong>User:</strong> <a href={`mailto:${item.user_contact}`}>{item.user_name}</a></div>
+
+                <h4>Comments:</h4>
+            {item.comments && item.comments.map(comment => (
+            <div classList="comment" key={comment.id}>
+                <img src={`/static/uploads/${comment.image_url}`}
+                     alt={comment.title}
+                     class="draggable-img random-size"
+                     draggable="true"
+                     onDragStart={e => drag(e, item)}
+                     data-img-src={`/static/uploads/${comment.image_url}`}/>
+                <br/>
+                <div
+                class="draggable-text random-size"
+                draggable="true"
+                onDragStart={e => drag(e, item)}>
+                {comment.content}
+                {comment.created_at && (
+  <small>
+    <strong>
+      Posted on {new Date(comment.created_at).toISOString().slice(0, 16).replace('T', ' ')}
+    </strong>
+  </small>
+)}
+            </div>
+            </div>
+
+            ))}
+
       </div>
       );
   console.log('renderItem:', renderItem);
