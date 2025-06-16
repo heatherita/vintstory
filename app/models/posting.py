@@ -1,13 +1,6 @@
-# from app.models import db
-
 from dataclasses import dataclass, field
-from typing import List
-import json
 
-from app.models.comment import Comment
-
-
-# from app.models.comment import Comment
+from app.models import db
 
 
 @dataclass
@@ -20,9 +13,11 @@ class Posting(db.Model):
     user_contact: str
     image_url: str
     then_image_url: str
-    comments: List[Comment] = field(default_factory=list)
-    # comments: list
-    # comments: list[Comment]
+    comments: Mapped["Comments"] = relationship(
+        "Comments",
+        back_populates="posting",
+        uselist=True
+    )
 
 
     id = db.Column(db.Integer, primary_key=True)

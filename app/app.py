@@ -1,9 +1,9 @@
 from flask import Flask, send_from_directory
-from models import db
+# from models import db
 import os
-from blueprints.listings import listings_bp
-from blueprints.postings import postings_bp
-from blueprints.comments import comments_bp
+
+from app.models import db
+
 
 def create_app():
     app = Flask(__name__)
@@ -15,6 +15,9 @@ def create_app():
     IMG_FOLDER = os.path.join("static", "images","uploads")
     app.config["UPLOAD"] = IMG_FOLDER
 
+    from app.blueprints.listings import listings_bp
+    from app.blueprints.postings import postings_bp
+    from app.blueprints.comments import comments_bp
     app.register_blueprint(listings_bp)
     app.register_blueprint(postings_bp)
     app.register_blueprint(comments_bp)
