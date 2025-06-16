@@ -1,12 +1,8 @@
-from app.models import db
-from marshmallow import Schema, fields
+from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
+from app.models.comment import Comment
 
-
-class CommentsSchema(Schema):
-
-    id = fields.Integer()
-    content = fields.String(500)
-    image_url = fields.String(500)
-    posting_id = db.Column(db.Integer, db.ForeignKey('posting.id'))
-    listing_id = db.Column(db.Integer, db.ForeignKey('listing.id'))
+class CommentSchema(SQLAlchemyAutoSchema):
+    class Meta:
+        model = Comment
+        load_instance = True
 

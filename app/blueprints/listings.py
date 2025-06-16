@@ -1,5 +1,4 @@
 from flask import Blueprint, render_template, request, redirect
-
 from app.models import db
 from app.models.comment import Comment
 from app.models.data_helper import DataHelper

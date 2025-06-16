@@ -1,10 +1,10 @@
 from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
-from app.models.posting import Posting
+from app.models.listing import Listing
 
 
-class PostingSchema(SQLAlchemyAutoSchema):
+class ListingSchema(SQLAlchemyAutoSchema):
     class Meta:
-        model = Posting
+        model = Listing
         include_relationships = True
         load_instance = True
 

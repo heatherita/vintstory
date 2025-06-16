@@ -3,22 +3,7 @@ from dataclasses import dataclass, field
 from app.models import db
 
 
-@dataclass
 class Posting(db.Model):
-    id: int
-    title: str
-    description: str
-    story: str
-    user_name: str
-    user_contact: str
-    image_url: str
-    then_image_url: str
-    comments: Mapped["Comments"] = relationship(
-        "Comments",
-        back_populates="posting",
-        uselist=True
-    )
-
 
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(100))

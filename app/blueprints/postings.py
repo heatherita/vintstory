@@ -1,8 +1,12 @@
 from flask import Blueprint, render_template, request, redirect, jsonify, current_app
-from app.models import db, comment, data_helper, posting
-# from app.models.comment import Comment
-# from app.models.data_helper import DataHelper
-# from app.models.posting import Posting
+from sqlalchemy.orm import joinedload
+
+from app.models import db, data_helper
+from app.models.comment import Comment
+from app.models.posting import Posting
+# from app.models import db, comment, data_helper, posting
+from app.models.postingschema import PostingSchema
+import json
 
 postings_bp = Blueprint('postings', __name__)
 
@@ -12,15 +16,20 @@ def index():
 
 @postings_bp.route('/api/postings', methods=['GET'])
 def postings():
-    items = posting.Posting.query.all()
-    for item in items:
-        print('item: ', item);
-    return jsonify(items)
+    # items = posting.Posting.query.all()
+    items = Posting.query.options(joinedload(Posting.comments)).all()
+    # for item in items:
+    #     print('item: ', item);
+    schema = PostingSchema(many=True)
+    result = schema.dump(items)
+    print('post json: ',json.dumps(result, indent=4))
+    postjson = jsonify(result)
+    return postjson
 
 @postings_bp.route('/add', methods=['GET', 'POST'])
 def add_item():
     if request.method == 'POST':
-        new_item = posting.Posting(
+        new_item = Posting(
             title=request.form['title'],
             description=request.form['description'],
             story=request.form['story'],
@@ -45,7 +54,7 @@ def add_data():
 
 @postings_bp.route('/data/postings/delete')
 def delete_data():
-    posting.Posting.query.delete()
-    comment.Comment.query.delete()
+    Posting.query.delete()
+    Comment.query.delete()
     db.session.commit()
     return redirect('/postings')
