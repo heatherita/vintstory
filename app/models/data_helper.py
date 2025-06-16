@@ -1,7 +1,7 @@
-from models import db
-from models.listing import Listing
-from models.posting import Posting
-from models.comment import Comment
+from app.models import db
+from app.models.comment import Comment
+from app.models.posting import Posting
+
 
 class DataHelper:
     @staticmethod

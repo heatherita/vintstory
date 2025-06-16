@@ -1,8 +1,8 @@
 from flask import Blueprint, render_template, request, redirect, jsonify, current_app
-from models.posting import Posting
-from models.comment import Comment
-from models.data_helper import DataHelper
-from models import db
+from app.models import db, comment, data_helper, posting
+# from app.models.comment import Comment
+# from app.models.data_helper import DataHelper
+# from app.models.posting import Posting
 
 postings_bp = Blueprint('postings', __name__)
 
@@ -12,7 +12,7 @@ def index():
 
 @postings_bp.route('/api/postings', methods=['GET'])
 def postings():
-    items = Posting.query.all()
+    items = posting.Posting.query.all()
     for item in items:
         print('item: ', item);
     return jsonify(items)
@@ -20,7 +20,7 @@ def postings():
 @postings_bp.route('/add', methods=['GET', 'POST'])
 def add_item():
     if request.method == 'POST':
-        new_item = Posting(
+        new_item = posting.Posting(
             title=request.form['title'],
             description=request.form['description'],
             story=request.form['story'],
@@ -40,12 +40,12 @@ def show_posting(posting_id):
 
 @postings_bp.route('/data/postings/add')
 def add_data():
-    DataHelper.add_dummy_posting_data()
+    data_helper.DataHelper.add_dummy_posting_data()
     return redirect('/postings')
 
 @postings_bp.route('/data/postings/delete')
 def delete_data():
-    Posting.query.delete()
-    Comment.query.delete()
+    posting.Posting.query.delete()
+    comment.Comment.query.delete()
     db.session.commit()
     return redirect('/postings')

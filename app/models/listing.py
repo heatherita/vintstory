@@ -1,4 +1,5 @@
-from models import db
+# from app.models import db
+
 
 class Listing(db.Model):
     id = db.Column(db.Integer, primary_key=True)
