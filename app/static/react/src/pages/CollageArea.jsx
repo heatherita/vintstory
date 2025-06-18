@@ -5,6 +5,7 @@ export default function CollageArea() {
  const collageRef = useRef(null);
   const [tooltipVisible, setTooltipVisible] = useState(false);
   const [items, setItems] = useState([]); // Unified array for img and text
+  const [commentContent, setCommentContent] = useState([]); // Unified array for img and text
   const [movedItems, setMovedItems] = useState([]); // Unified array for img and text
   const [draggingId, setDraggingId] = useState(null);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
@@ -104,6 +105,33 @@ function drag(e, item) {
   e.dataTransfer.setData('application/json', JSON.stringify(data));
 }
 
+const handleChange = (event) => {
+  setName(event.target.value);
+};
+
+
+function handleSubmit = (event, item) => {
+   event.preventDefault();
+   //setIsPending(true);
+   setTimeout(( => {
+       fetch('/api/add_comment/', item.id, requestOptions)
+        .then(response => response.json())
+        .then(data => this.setState({setCommentContent : e.target.content }));
+      // setIsPending(false);
+       }, 500);
+    };
+
+handleFormSubmit() {
+    // Simple PUT request with a JSON body using fetch
+    const requestOptions = {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title: 'React PUT Request Example' })
+    };
+    fetch('/api/add_comment/',item.id, requestOptions)
+        .then(response => response.json())
+        .then(data => this.setState({ postId: data.id }));
+}
 
   const showTooltip = () => {
     setTooltipVisible(true);
@@ -145,10 +173,15 @@ function drag(e, item) {
       Posted on {new Date(comment.created_at).toISOString().slice(0, 16).replace('T', ' ')}
     </strong>
   </small>
+
 )}
             </div>
+            <form onSubmit={e => handleFormSubmit(e, item)}>
+                <label for="content">Add a Comment:</label><br>
+                <textarea name="content" rows="3" required="true"></textarea><br>
+                <input type="submit" value="Upload"/>
+            </form>
             </div>
-
             ))}
 
       </div>

@@ -24,6 +24,7 @@ def add_comment_posting(posting_id):
         content=request.form['content'],
         posting_id=posting_id
     )
+    print("added comment ", new_comment.content)
     db.session.add(new_comment)
     db.session.commit()
     return redirect(f'/posting/{posting_id}')
