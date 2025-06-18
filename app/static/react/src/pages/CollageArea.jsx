@@ -5,7 +5,7 @@ export default function CollageArea() {
  const collageRef = useRef(null);
   const [tooltipVisible, setTooltipVisible] = useState(false);
   const [items, setItems] = useState([]); // Unified array for img and text
-  const [commentContent, setCommentContent] = useState([]); // Unified array for img and text
+  const [commentInputs, setCommentInputs] = useState([]); // Unified array for img and text
   const [movedItems, setMovedItems] = useState([]); // Unified array for img and text
   const [draggingId, setDraggingId] = useState(null);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
@@ -112,26 +112,26 @@ const handleChange = (event) => {
 
 function handleSubmit = (event, item) => {
    event.preventDefault();
-   //setIsPending(true);
-   setTimeout(( => {
-       fetch('/api/add_comment/', item.id, requestOptions)
-        .then(response => response.json())
-        .then(data => this.setState({setCommentContent : e.target.content }));
-      // setIsPending(false);
-       }, 500);
-    };
+   const content = commentInputs[item.id];
+   if(!content) return;
 
-handleFormSubmit() {
-    // Simple PUT request with a JSON body using fetch
-    const requestOptions = {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title: 'React PUT Request Example' })
-    };
-    fetch('/api/add_comment/',item.id, requestOptions)
-        .then(response => response.json())
-        .then(data => this.setState({ postId: data.id }));
-}
+   fetch('/api/add_comment/', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ item_id: item.id, content })
+  })
+  .then(res => res.json())
+  .then(newComment => {
+      setItems(items =>
+          items.map(it =>
+              it.id == item.id
+                ? { ...it, comments: [...(it.comments || []), newComment] }
+                : it
+       )
+      );
+      setCommentInputs(inputs => ({ ...inputs, [item.id]: '' })); // Clear input
+    });
+};
 
   const showTooltip = () => {
     setTooltipVisible(true);
@@ -177,13 +177,20 @@ handleFormSubmit() {
 )}
             </div>
             <form onSubmit={e => handleFormSubmit(e, item)}>
-                <label for="content">Add a Comment:</label><br>
-                <textarea name="content" rows="3" required="true"></textarea><br>
+                <label htmlFor={`content-${item.id}` for="content">Add a Comment:</label><br>
+                <textarea
+                name="content"
+                rows="3"
+                required="true"
+                value={commentInputs[item.id] || ''}
+                onChange={e =>
+                    setCommentInputs({...commentInputs, [item.id]: e.target.value})
+                    }
+                ></textarea><br>
                 <input type="submit" value="Upload"/>
             </form>
             </div>
             ))}
-
       </div>
       );
   console.log('renderItem:', renderItem);
