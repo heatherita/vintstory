@@ -110,7 +110,7 @@ const handleChange = (event) => {
 };
 
 
-function handleSubmit = (event, item) => {
+function handleSubmit(event, item){
    event.preventDefault();
    const content = commentInputs[item.id];
    if(!content) return;
@@ -131,7 +131,7 @@ function handleSubmit = (event, item) => {
       );
       setCommentInputs(inputs => ({ ...inputs, [item.id]: '' })); // Clear input
     });
-};
+}
 
   const showTooltip = () => {
     setTooltipVisible(true);
@@ -154,7 +154,7 @@ function handleSubmit = (event, item) => {
 
                 <h4>Comments:</h4>
             {item.comments && item.comments.map(comment => (
-            <div classList="comment" key={comment.id}>
+            <div className="comment" key={comment.id}>
                 <img src={`/static/uploads/${comment.image_url}`}
                      alt={comment.title}
                      class="draggable-img random-size"
