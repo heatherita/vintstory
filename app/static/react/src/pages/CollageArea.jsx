@@ -161,7 +161,7 @@ function handleSubmit(event, item){
                      draggable="true"
                      onDragStart={e => drag(e, item)}
                      data-img-src={`/static/uploads/${comment.image_url}`}/>
-                <br/>
+                <br>
                 <div
                 class="draggable-text random-size"
                 draggable="true"
@@ -173,10 +173,11 @@ function handleSubmit(event, item){
       Posted on {new Date(comment.created_at).toISOString().slice(0, 16).replace('T', ' ')}
     </strong>
   </small>
+</div>
+</div>
+))}
 
-)}
-            </div>
-            <form onSubmit={e => handleFormSubmit(e, item)}>
+            <form onSubmit={e => handleSubmit(e, item)}>
                 <label htmlFor={`content-${item.id}` for="content">Add a Comment:</label><br>
                 <textarea
                 name="content"
@@ -189,8 +190,8 @@ function handleSubmit(event, item){
                 ></textarea><br>
                 <input type="submit" value="Upload"/>
             </form>
-            </div>
-            ))}
+
+{/*             ))} */}
       </div>
       );
   console.log('renderItem:', renderItem);
