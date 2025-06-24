@@ -157,14 +157,14 @@ function handleSubmit(event, item){
             <div className="comment" key={comment.id}>
                 <img src={`/static/uploads/${comment.image_url}`}
                      alt={comment.title}
-                     class="draggable-img random-size"
-                     draggable="true"
+                     className="draggable-img random-size"
+                     draggable={true}
                      onDragStart={e => drag(e, item)}
                      data-img-src={`/static/uploads/${comment.image_url}`}/>
-                <br>
+                <br/>
                 <div
                 class="draggable-text random-size"
-                draggable="true"
+                draggable={true}
                 onDragStart={e => drag(e, item)}>
                 {comment.content}
                 {comment.created_at && (
@@ -173,25 +173,25 @@ function handleSubmit(event, item){
       Posted on {new Date(comment.created_at).toISOString().slice(0, 16).replace('T', ' ')}
     </strong>
   </small>
+  )}
 </div>
 </div>
 ))}
 
             <form onSubmit={e => handleSubmit(e, item)}>
-                <label htmlFor={`content-${item.id}` for="content">Add a Comment:</label><br>
+                <label htmlFor={`content-${item.id}`} for="content">Add a Comment:</label><br/>
                 <textarea
                 name="content"
                 rows="3"
-                required="true"
+                required={true}
                 value={commentInputs[item.id] || ''}
                 onChange={e =>
                     setCommentInputs({...commentInputs, [item.id]: e.target.value})
                     }
-                ></textarea><br>
+                ></textarea><br/>
                 <input type="submit" value="Upload"/>
             </form>
 
-{/*             ))} */}
       </div>
       );
   console.log('renderItem:', renderItem);
