@@ -1,4 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
+import Posting from './Posting';
 
 
 export default function CollageArea() {
@@ -139,60 +140,7 @@ function handleSubmit(event, item){
   };
 
   const renderItem = (item) => (
-          <div className="posting" key={item.id}>
-            <h2>{item.title}</h2>
-            <img src={`/static/uploads/${item.image_url}`}
-                 alt={item.title}
-                 class="draggable-img random-size"
-                 draggable={true}
-                 onDragStart={e => drag(e, item)}
-                data-img-src={`/static/uploads/${item.image_url}`}
-            />
-                <div id="descText" draggable={true} class="draggable-text" onDragStart={e => drag(e, item)}><strong>Description:</strong> {item.description} |</div>
-                <div id="storyText" draggable={true} class="draggable-text" onDragStart={e => drag(e, item)}><strong>Story:</strong> {item.story} |</div>
-                <div id="userText"><strong>User:</strong> <a href={`mailto:${item.user_contact}`}>{item.user_name}</a></div>
-
-                <h4>Comments:</h4>
-            {item.comments && item.comments.map(comment => (
-            <div className="comment" key={comment.id}>
-                <img src={`/static/uploads/${comment.image_url}`}
-                     alt={comment.title}
-                     className="draggable-img random-size"
-                     draggable={true}
-                     onDragStart={e => drag(e, item)}
-                     data-img-src={`/static/uploads/${comment.image_url}`}/>
-                <br/>
-                <div
-                class="draggable-text random-size"
-                draggable={true}
-                onDragStart={e => drag(e, item)}>
-                {comment.content}
-                {comment.created_at && (
-  <small>
-    <strong>
-      Posted on {new Date(comment.created_at).toISOString().slice(0, 16).replace('T', ' ')}
-    </strong>
-  </small>
-  )}
-</div>
-</div>
-))}
-
-            <form onSubmit={e => handleSubmit(e, item)}>
-                <label htmlFor={`content-${item.id}`} for="content">Add a Comment:</label><br/>
-                <textarea
-                name="content"
-                rows="3"
-                required={true}
-                value={commentInputs[item.id] || ''}
-                onChange={e =>
-                    setCommentInputs({...commentInputs, [item.id]: e.target.value})
-                    }
-                ></textarea><br/>
-                <input type="submit" value="Upload"/>
-            </form>
-
-      </div>
+          <Posting key={item.id}/>
       );
   console.log('renderItem:', renderItem);
 
@@ -271,7 +219,7 @@ function handleSubmit(event, item){
           Resizing collage...
         </div>;
 
-    const collageItems = movedItems.map(collageItem);
+  const collageItems = movedItems.map(collageItem);
 
   return (
       <div style={{display: 'inline-flex'}}>
