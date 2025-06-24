@@ -106,12 +106,13 @@ function drag(e, item) {
   e.dataTransfer.setData('application/json', JSON.stringify(data));
 }
 
-const handleChange = (event) => {
-  setName(event.target.value);
+const handleCommentChange = (itemId, e) => {
+  //setName(event.target.value);
+  setCommentInputs({ ...commentInputs, [itemId]: e.target.value});
 };
 
 
-function handleSubmit(event, item){
+const handleCommentSubmit = (item) => (e) => {
    event.preventDefault();
    const content = commentInputs[item.id];
    if(!content) return;
@@ -132,7 +133,7 @@ function handleSubmit(event, item){
       );
       setCommentInputs(inputs => ({ ...inputs, [item.id]: '' })); // Clear input
     });
-}
+};
 
   const showTooltip = () => {
     setTooltipVisible(true);
@@ -140,7 +141,11 @@ function handleSubmit(event, item){
   };
 
   const renderItem = (item) => (
-          <Posting key={item.id}/>
+          <Posting key={item.id}
+          item={item}
+          commentValue={commentInputs[item.id] || ""}
+          onCommentChange={(e) => handleCommentChange(item.id, e)}
+          onCommentSubmit={handleCommentSubmit(item)}/>
       );
   console.log('renderItem:', renderItem);
 

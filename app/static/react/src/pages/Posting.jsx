@@ -1,7 +1,13 @@
 import Comment from './Comment';
 import CommentForm from './CommentForm';
 
-export default function Posting({ item, ...props }) {
+export default function Posting({
+  item,
+  commentValue,
+  onCommentChange,
+  onCommentSubmit,
+  // ...any other props (like drag handlers)
+}) {
   return (
     <div className="posting" key={item.id}>
        <h2>{item.title}</h2>
@@ -17,7 +23,10 @@ export default function Posting({ item, ...props }) {
                 <div id="userText"><strong>User:</strong> <a href={`mailto:${item.user_contact}`}>{item.user_name}</a></div>
       <h4>Comments:</h4>
       {item.comments?.map(comment => <Comment key={comment.id} comment={comment} />)}
-      <CommentForm {...props} />
+      <CommentForm value={commentValue}
+        onChange={onCommentChange}
+        onSubmit={onCommentSubmit}
+        item={item} />
     </div>
   );
 }
