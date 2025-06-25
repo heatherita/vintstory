@@ -22,7 +22,7 @@ def postings():
     #     print('item: ', item);
     schema = PostingSchema(many=True)
     result = schema.dump(items)
-    print('post json: ',json.dumps(result, indent=4))
+    # print('post json: ',json.dumps(result, indent=4))
     postjson = jsonify(result)
     return postjson
 

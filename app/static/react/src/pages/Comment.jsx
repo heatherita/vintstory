@@ -1,17 +1,17 @@
-export default function Comment({ comment }) {
+export default function Comment({ comment,onDragStart }) {
   return (
     <div className="comment" key={comment.id}>
       <img src={`/static/uploads/${comment.image_url}`}
       alt={comment.title}
       className="draggable-img random-size"
       draggable
-      onDragStart={e => drag(e, item)}
+      onDragStart={onDragStart}
       data-img-src={`/static/uploads/${comment.image_url}`}/>
        <br/>
        <div
        class="draggable-text random-size"
        draggable
-       onDragStart={e => drag(e, item)}>
+       onDragStart={onDragStart}>
        {comment.content}
        {comment.created_at && (
         <small>

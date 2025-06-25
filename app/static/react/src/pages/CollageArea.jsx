@@ -85,6 +85,7 @@ function handleMouseMove(e) {
   function handleMouseUp() {
     setDraggingId(null);
   }
+
   if (draggingId !== null) {
     window.addEventListener('mousemove', handleMouseMove);
     window.addEventListener('mouseup', handleMouseUp);
@@ -95,7 +96,7 @@ function handleMouseMove(e) {
   };
 }, [draggingId, dragOffset]);
 
-function drag(e, item) {
+const handleDrag = (item, e) => {
   let data = {};
   if (e.target.classList.contains('draggable-img')) {
     data = { type: 'image', src: e.target.src };
@@ -104,7 +105,7 @@ function drag(e, item) {
   }
    //console.log('dragging data', item, ' event is ', e);
   e.dataTransfer.setData('application/json', JSON.stringify(data));
-}
+};
 
 const handleCommentChange = (itemId, e) => {
   //setName(event.target.value);
@@ -117,7 +118,7 @@ const handleCommentSubmit = (item) => (e) => {
    const content = commentInputs[item.id];
    if(!content) return;
 
-   fetch('/api/add_comment/', {
+   fetch(`/api/add_comment/${item.id}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ item_id: item.id, content })
@@ -145,7 +146,8 @@ const handleCommentSubmit = (item) => (e) => {
           item={item}
           commentValue={commentInputs[item.id] || ""}
           onCommentChange={(e) => handleCommentChange(item.id, e)}
-          onCommentSubmit={handleCommentSubmit(item)}/>
+          onCommentSubmit={handleCommentSubmit(item)}
+          onDragStart={(e) => handleDrag(item, e)}/>
       );
   console.log('renderItem:', renderItem);
 
