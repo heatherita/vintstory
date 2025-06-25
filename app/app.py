@@ -1,3 +1,6 @@
+import shutil
+import subprocess
+import click
 from flask import Flask, send_from_directory
 # from models import db
 import os
@@ -7,6 +10,24 @@ from app.models import db
 
 def create_app():
     app = Flask(__name__)
+
+    @app.cli.command("build-assets")
+    def build_assets():
+        react_path = os.path.join(os.path.dirname(__file__), 'static', 'react')
+        try:
+            subprocess.run(["npm","install"], cwd=react_path, check=True)
+            subprocess.run(["npm", "run", "build"], cwd=react_path, check=True)
+            click.echo("✅ React frontend built successfully.")
+        except subprocess.CalledProcessError as e:
+            click.echo(f"X Error building frontend: {e}")
+
+            if os.path.exists(output_path):
+                shutil.rmtree(output_path)
+            shutil.copytree(build_path,output_path)
+            click.echo(f" Copied build to: {output_path}")
+        except subprocess.CalledProcessError as e:
+            click.echo(f"X Build failed: {e}")
+
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///vintage_whatever.db'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 

@@ -125,7 +125,6 @@ const handleCommentSubmit = (item) => (e) => {
       console.log('Fetch response:', res);
       return res.json();
   })
-//   .then(res => res.json())
   .then(newComment => {
       //console.log('Parsed JSON (new comment):', newComment);
       setItems(items => {
