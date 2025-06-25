@@ -108,33 +108,56 @@ const handleDrag = (item, e) => {
 };
 
 const handleCommentChange = (itemId, e) => {
-  //setName(event.target.value);
   setCommentInputs({ ...commentInputs, [itemId]: e.target.value});
 };
 
-
+// returns only new comment then merges in
 const handleCommentSubmit = (item) => (e) => {
-   event.preventDefault();
+   e.preventDefault();
    const content = commentInputs[item.id];
    if(!content) return;
-
    fetch(`/api/add_comment/${item.id}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ item_id: item.id, content })
   })
-  .then(res => res.json())
+  .then(res => {
+      console.log('Fetch response:', res);
+      return res.json();
+  })
+//   .then(res => res.json())
   .then(newComment => {
-      setItems(items =>
-          items.map(it =>
-              it.id == item.id
+      //console.log('Parsed JSON (new comment):', newComment);
+      setItems(items => {
+      const updated =  items.map(it => {
+          //console.log('Comparing:', it.id, 'to', item.id);
+              return it.id == item.id
                 ? { ...it, comments: [...(it.comments || []), newComment] }
-                : it
-       )
-      );
+                : it;
+       });
+   //console.log('Updated items:', updated);
+    return updated;
+      })
       setCommentInputs(inputs => ({ ...inputs, [item.id]: '' })); // Clear input
     });
 };
+
+// returns all postings
+const handleCommentSubmitAllPosts = (item) => (e) => {
+   e.preventDefault();
+   const content = commentInputs[item.id];
+   if(!content) return;
+   fetch(`/api/add_comment_list/${item.id}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ item_id: item.id, content })
+  })
+.then(res => res.json())
+.then(newItems => {
+  setItems(newItems);              // Just set the new items array
+  setCommentInputs(inputs => ({ ...inputs, [item.id]: '' })); // Clear input
+});
+}
 
   const showTooltip = () => {
     setTooltipVisible(true);

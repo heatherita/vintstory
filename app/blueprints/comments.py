@@ -1,22 +1,14 @@
-from flask import Blueprint, request, redirect, current_app, send_from_directory
+from flask import Blueprint, request, redirect, current_app, jsonify, send_from_directory
 from werkzeug.utils import secure_filename
 # from app.models import db, comment
 import os
 
 from app.models import db
 from app.models.comment import Comment
+from app.models.commentschema import CommentSchema
+import json
 
 comments_bp = Blueprint('comments', __name__)
-
-# @comments_bp.route('/api/add_comment/<int:listing_id>', methods=['POST'])
-# def add_comment_listing(listing_id):
-#     new_comment = Comment(
-#         content=request.form['content'],
-#         listing_id=listing_id
-#     )
-#     db.session.add(new_comment)
-#     db.session.commit()
-#     return redirect(f'/listing/{listing_id}')
 
 @comments_bp.route('/api/add_comment/<int:posting_id>', methods=['POST'])
 def add_comment_posting(posting_id):
@@ -26,7 +18,22 @@ def add_comment_posting(posting_id):
         content=data['content'],
         posting_id=posting_id
     )
-    # print("added comment ", new_comment.content)
+    schema = CommentSchema(many=False)
+    result = schema.dump(new_comment)
+    print('post json: ', json.dumps(result, indent=4))
+    postjson = jsonify(result)
+    return postjson
+
+
+@comments_bp.route('/api/add_comment_list/<int:posting_id>', methods=['POST'])
+def add_comment_posting_list(posting_id):
+    print('comment request:',request.data)
+    data = request.get_json()
+    new_comment = Comment(
+        content=data['content'],
+        posting_id=posting_id
+    )
+    print("added comment ", new_comment.content)
     db.session.add(new_comment)
     db.session.commit()
     return redirect(f'/api/posting/{posting_id}')

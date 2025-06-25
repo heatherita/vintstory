@@ -4,7 +4,6 @@ from sqlalchemy.orm import joinedload
 from app.models import db, data_helper
 from app.models.comment import Comment
 from app.models.posting import Posting
-# from app.models import db, comment, data_helper, posting
 from app.models.postingschema import PostingSchema
 import json
 
@@ -16,13 +15,12 @@ def index():
 
 @postings_bp.route('/api/postings', methods=['GET'])
 def postings():
-    # items = posting.Posting.query.all()
     items = Posting.query.options(joinedload(Posting.comments)).all()
     # for item in items:
     #     print('item: ', item);
     schema = PostingSchema(many=True)
     result = schema.dump(items)
-    # print('post json: ',json.dumps(result, indent=4))
+    print('post json: ',json.dumps(result, indent=4))
     postjson = jsonify(result)
     return postjson
 
