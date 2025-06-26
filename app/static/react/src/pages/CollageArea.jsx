@@ -41,8 +41,6 @@ export default function CollageArea() {
         id: Date.now() + Math.random()
       };
       setMovedItems(prev => [...prev, newItem]);
-      //collageItems.map(newItem);
-      //return collageItems;
     };
 
     const handleDragOver = (e) => {
