@@ -3,7 +3,7 @@ import Posting from './Posting';
 
 
 export default function CollageArea() {
- const collageRef = useRef(null);
+  const collageRef = useRef(null);
   const [tooltipVisible, setTooltipVisible] = useState(false);
   const [items, setItems] = useState([]); // Unified array for img and text
   const [commentInputs, setCommentInputs] = useState([]); // Unified array for img and text
@@ -12,20 +12,20 @@ export default function CollageArea() {
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
 
 
-useEffect(() => {
+  useEffect(() => {
     fetch('/api/postings')
       .then(res => res.json())
       .then(data => setItems(data))
   }, []);
 
   useEffect(() => {
-       if (items.length === 0) return;
-  const sizes = ['100px', '150px', '200px', '250px', '300px'];
-      document.querySelectorAll('.random-size').forEach(img => {
-        const randomSize = sizes[Math.floor(Math.random() * sizes.length)];
-        img.style.maxWidth = randomSize;
+    if (items.length === 0) return;
+    const sizes = ['100px', '150px', '200px', '250px', '300px'];
+    document.querySelectorAll('.random-size').forEach(img => {
+      const randomSize = sizes[Math.floor(Math.random() * sizes.length)];
+      img.style.maxWidth = randomSize;
     });
-}, [items]);
+  }, [items]);
 
   console.log('creating collage area');
   useEffect(() => {
@@ -60,103 +60,103 @@ useEffect(() => {
   }, []);
 
   // Add global event listeners in useEffect:
- useEffect(() => {
+  useEffect(() => {
 
-function handleMouseMove(e) {
-  if (draggingId !== null) {
-    setMovedItems(currentItems => {
-      // Define a function that closes over e, dragOffset, etc.
-      const updateItemPosition = (item) =>
-        item.id === draggingId
-          ? {
-              ...item,
-              left: `${e.clientX - dragOffset.x - collageRef.current.getBoundingClientRect().left}px`,
-              top: `${e.clientY - dragOffset.y - collageRef.current.getBoundingClientRect().top}px`,
-            }
-          : item;
+    function handleMouseMove(e) {
+      if (draggingId !== null) {
+        setMovedItems(currentItems => {
+          // Define a function that closes over e, dragOffset, etc.
+          const updateItemPosition = (item) =>
+            item.id === draggingId
+              ? {
+                ...item,
+                left: `${e.clientX - dragOffset.x - collageRef.current.getBoundingClientRect().left}px`,
+                top: `${e.clientY - dragOffset.y - collageRef.current.getBoundingClientRect().top}px`,
+              }
+              : item;
 
-      const newItems = movedItems.map(updateItemPosition);
-      //console.log('Updated items:', newItems);
-      return newItems;
-    });
-  }
-}
+          const newItems = movedItems.map(updateItemPosition);
+          //console.log('Updated items:', newItems);
+          return newItems;
+        });
+      }
+    }
 
-  function handleMouseUp() {
-    setDraggingId(null);
-  }
+    function handleMouseUp() {
+      setDraggingId(null);
+    }
 
-  if (draggingId !== null) {
-    window.addEventListener('mousemove', handleMouseMove);
-    window.addEventListener('mouseup', handleMouseUp);
-  }
-  return () => {
-    window.removeEventListener('mousemove', handleMouseMove);
-    window.removeEventListener('mouseup', handleMouseUp);
+    if (draggingId !== null) {
+      window.addEventListener('mousemove', handleMouseMove);
+      window.addEventListener('mouseup', handleMouseUp);
+    }
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [draggingId, dragOffset]);
+
+  const handleDrag = (item, e) => {
+    let data = {};
+    if (e.target.classList.contains('draggable-img')) {
+      data = { type: 'image', src: e.target.src };
+    } else if (e.target.classList.contains('draggable-text')) {
+      data = { type: 'text', src: e.target.outerText };
+    }
+    //console.log('dragging data', item, ' event is ', e);
+    e.dataTransfer.setData('application/json', JSON.stringify(data));
   };
-}, [draggingId, dragOffset]);
 
-const handleDrag = (item, e) => {
-  let data = {};
-  if (e.target.classList.contains('draggable-img')) {
-    data = { type: 'image', src: e.target.src };
-   } else if (e.target.classList.contains('draggable-text')) {
-    data = { type: 'text', src: e.target.outerText };
-  }
-   //console.log('dragging data', item, ' event is ', e);
-  e.dataTransfer.setData('application/json', JSON.stringify(data));
-};
+  const handleCommentChange = (itemId, e) => {
+    setCommentInputs({ ...commentInputs, [itemId]: e.target.value });
+  };
 
-const handleCommentChange = (itemId, e) => {
-  setCommentInputs({ ...commentInputs, [itemId]: e.target.value});
-};
-
-// returns only new comment then merges in
-const handleCommentSubmit = (item) => (e) => {
-   e.preventDefault();
-   const content = commentInputs[item.id];
-   if(!content) return;
-   fetch(`/api/add_comment/${item.id}`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ item_id: item.id, content })
-  })
-  .then(res => {
-      console.log('Fetch response:', res);
-      return res.json();
-  })
-  .then(newComment => {
-      //console.log('Parsed JSON (new comment):', newComment);
-      setItems(items => {
-      const updated =  items.map(it => {
-          //console.log('Comparing:', it.id, 'to', item.id);
-              return it.id == item.id
-                ? { ...it, comments: [...(it.comments || []), newComment] }
-                : it;
-       });
-   //console.log('Updated items:', updated);
-    return updated;
+  // returns only new comment then merges in
+  const handleCommentSubmit = (item) => (e) => {
+    e.preventDefault();
+    const content = commentInputs[item.id];
+    if (!content) return;
+    fetch(`/api/add_comment/${item.id}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ item_id: item.id, content })
+    })
+      .then(res => {
+        console.log('Fetch response:', res);
+        return res.json();
       })
-      setCommentInputs(inputs => ({ ...inputs, [item.id]: '' })); // Clear input
-    });
-};
+      .then(newComment => {
+        //console.log('Parsed JSON (new comment):', newComment);
+        setItems(items => {
+          const updated = items.map(it => {
+            //console.log('Comparing:', it.id, 'to', item.id);
+            return it.id == item.id
+              ? { ...it, comments: [...(it.comments || []), newComment] }
+              : it;
+          });
+          //console.log('Updated items:', updated);
+          return updated;
+        })
+        setCommentInputs(inputs => ({ ...inputs, [item.id]: '' })); // Clear input
+      });
+  };
 
-// returns all postings
-const handleCommentSubmitAllPosts = (item) => (e) => {
-   e.preventDefault();
-   const content = commentInputs[item.id];
-   if(!content) return;
-   fetch(`/api/add_comment_list/${item.id}`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ item_id: item.id, content })
-  })
-.then(res => res.json())
-.then(newItems => {
-  setItems(newItems);              // Just set the new items array
-  setCommentInputs(inputs => ({ ...inputs, [item.id]: '' })); // Clear input
-});
-}
+  // returns all postings
+  const handleCommentSubmitAllPosts = (item) => (e) => {
+    e.preventDefault();
+    const content = commentInputs[item.id];
+    if (!content) return;
+    fetch(`/api/add_comment_list/${item.id}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ item_id: item.id, content })
+    })
+      .then(res => res.json())
+      .then(newItems => {
+        setItems(newItems);              // Just set the new items array
+        setCommentInputs(inputs => ({ ...inputs, [item.id]: '' })); // Clear input
+      });
+  }
 
   const showTooltip = () => {
     setTooltipVisible(true);
@@ -164,119 +164,119 @@ const handleCommentSubmitAllPosts = (item) => (e) => {
   };
 
   const renderItem = (item) => (
-          <Posting key={item.id}
-          item={item}
-          commentValue={commentInputs[item.id] || ""}
-          onCommentChange={(e) => handleCommentChange(item.id, e)}
-          onCommentSubmit={handleCommentSubmit(item)}
-          onDragStart={(e) => handleDrag(item, e)}/>
-      );
+    <Posting key={item.id}
+      item={item}
+      commentValue={commentInputs[item.id] || ""}
+      onCommentChange={(e) => handleCommentChange(item.id, e)}
+      onCommentSubmit={handleCommentSubmit(item)}
+      onDragStart={(e) => handleDrag(item, e)} />
+  );
   console.log('renderItem:', renderItem);
 
   const renderedItems = items.map(renderItem);
-    console.log('renderedItems:', renderedItems);
+  console.log('renderedItems:', renderedItems);
 
- const collageItem = (item) => (
-        item.type === 'image' ? (
-          <img
-            type={item.type}
-            key={item.id}
-            src={item.src}
-            className="collage-img"
-            style={{
-              position: 'absolute',
-              maxWidth: '150px',
-              left: item.left,
-              top: item.top,
-              zIndex: item.id,
-              cursor: draggingId === item.id ? 'grabbing' : 'grab'
-            }}
-            draggable={false}
-            onMouseDown={e => {
-              setDraggingId(item.id);
-              const rect = e.target.getBoundingClientRect();
-              setDragOffset({
-                x: e.clientX - rect.left,
-                y: e.clientY - rect.top,
-              });
-            }}
-          />
-        ) :
-    (
-          <div
-            key={item.id}
-             type={item.type}
-            className="collage-img collage-text"
-            style={{
-              position: 'absolute',
-              left: item.left,
-              top: item.top,
-              zIndex: item.id,
-              cursor: draggingId === item.id ? 'grabbing' : 'grab',
-              background: '#fffbe9',
-              minWidth: '60px',
-              minHeight: '30px',
-              padding: '6px 10px'
-            }}
-            draggable={false}
-            onMouseDown={e => {
-              setDraggingId(item.id);
-              const rect = e.target.getBoundingClientRect();
-              setDragOffset({
-                x: e.clientX - rect.left,
-                y: e.clientY - rect.top,
-              });
-            }}
-          >
-            {item.src}
-          </div>
-        )
-      );
-
-  const toolTipItem = <div
+  const collageItem = (item) => (
+    item.type === 'image' ? (
+      <img
+        type={item.type}
+        key={item.id}
+        src={item.src}
+        className="collage-img"
+        style={{
+          position: 'absolute',
+          maxWidth: '150px',
+          left: item.left,
+          top: item.top,
+          zIndex: item.id,
+          cursor: draggingId === item.id ? 'grabbing' : 'grab'
+        }}
+        draggable={false}
+        onMouseDown={e => {
+          setDraggingId(item.id);
+          const rect = e.target.getBoundingClientRect();
+          setDragOffset({
+            x: e.clientX - rect.left,
+            y: e.clientY - rect.top,
+          });
+        }}
+      />
+    ) :
+      (
+        <div
+          key={item.id}
+          type={item.type}
+          className="collage-img collage-text"
           style={{
             position: 'absolute',
-            right: '10px',
-            bottom: '10px',
-            backgroundColor: '#ffc',
-            padding: '6px 12px',
-            fontSize: '12px',
-            border: '1px solid #ccc',
-            boxShadow: '2px 2px 5px rgba(0,0,0,0.2)'
+            left: item.left,
+            top: item.top,
+            zIndex: item.id,
+            cursor: draggingId === item.id ? 'grabbing' : 'grab',
+            background: '#fffbe9',
+            minWidth: '60px',
+            minHeight: '30px',
+            padding: '6px 10px'
+          }}
+          draggable={false}
+          onMouseDown={e => {
+            setDraggingId(item.id);
+            const rect = e.target.getBoundingClientRect();
+            setDragOffset({
+              x: e.clientX - rect.left,
+              y: e.clientY - rect.top,
+            });
           }}
         >
-          Resizing collage...
-        </div>;
+          {item.src}
+        </div>
+      )
+  );
+
+  const toolTipItem = <div
+    style={{
+      position: 'absolute',
+      right: '10px',
+      bottom: '10px',
+      backgroundColor: '#ffc',
+      padding: '6px 12px',
+      fontSize: '12px',
+      border: '1px solid #ccc',
+      boxShadow: '2px 2px 5px rgba(0,0,0,0.2)'
+    }}
+  >
+    Resizing collage...
+  </div>;
 
   const collageItems = movedItems.map(collageItem);
 
   return (
-      <div style={{display: 'inline-flex'}}>
-      <div style={{flex: '1'}}>
+    <div style={{ display: 'inline-flex' }}>
+      <div style={{ flex: '1' }}>
         <p>Rendered Items.</p>
-      {renderedItems}
-    </div>
-    <div
-      id="collage-area"
-      ref={collageRef}
-      style={{
-        position: 'fixed',
-        right: '100px',
-        top: '20px',
-        minHeight: '500px',
-        border: '2px dashed #ccc',
-        padding: '10px',
-        resize: 'both',
-        overflow: 'auto',
-        width: '400px'
-      }}
-      onMouseDown={showTooltip} // simulate resize trigger
-    >
-      <h3>🎨 Collage Area</h3>
-      <p>Drag images or text here to make your collage.</p>
-      {tooltipVisible && toolTipItem}
-      {collageItems}
-    </div>
+        {renderedItems}
+      </div>
+      <div
+        id="collage-area"
+        ref={collageRef}
+        style={{
+          position: 'fixed',
+          right: '100px',
+          top: '20px',
+          minHeight: '500px',
+          border: '2px dashed #ccc',
+          padding: '10px',
+          resize: 'both',
+          overflow: 'auto',
+          width: '400px'
+        }}
+        onMouseDown={showTooltip} // simulate resize trigger
+      >
+        <h3>🎨 Collage Area</h3>
+        <p>Drag images or text here to make your collage.</p>
+        {tooltipVisible && toolTipItem}
+        {collageItems}
+      </div>
     </div>
   );
 }

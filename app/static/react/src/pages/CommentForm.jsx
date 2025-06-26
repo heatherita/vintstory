@@ -4,10 +4,10 @@ export default function CommentForm({ value, onChange, onSubmit, item }) {
     <form onSubmit={onSubmit}>
       <label htmlFor={`content-${item.id}`}>Add a Comment:</label>
       <textarea
-      value={value}
-      onChange={onChange}
-      required
-      rows={3} />
+        value={value}
+        onChange={onChange}
+        required
+        rows={3} />
       <input type="submit" value="Upload" />
     </form>
   );
