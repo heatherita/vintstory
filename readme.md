@@ -1,6 +1,6 @@
 # VintStory 🎲
 
-A community-driven tool that allows for text and image posting with a collage area for fun.
+A community-driven tool that allows for text and image posting with a collage area for fun. Originally intended as a vintage clothing marketplace, but can be used for social, ecommerce or whatever.
 
 ---
 
