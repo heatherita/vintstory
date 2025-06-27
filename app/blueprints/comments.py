@@ -44,19 +44,15 @@ def file_upload(posting_id):
         # data = request.get_json()
         f = request.files.get('file')
         filename = secure_filename(f.filename)
-        f.save(os.path.join(current_app.config['UPLOAD'], filename))
+        fullname = os.path.join(current_app.config['UPLOAD'], filename)
+        print('fullname: ', fullname)
+        f.save(fullname)
 
         new_comment = Comment(
             content=request.form.get('content'),
             posting_id=posting_id,
             image_url=filename
         )
-    schema = CommentSchema(many=False)
-    result = schema.dump(new_comment)
-    print('post json: ', json.dumps(result, indent=4))
-    postjson = jsonify(result)
-    return postjson
-        # db.session.add(new_comment)
-        # db.session.commit()
-        #return send_from_directory(current_app.config['UPLOAD'], filename)
-        #return redirect(f'/api/posting/{posting_id}')
+    db.session.add(new_comment)
+    db.session.commit()
+    return redirect(f'/api/posting/{posting_id}')

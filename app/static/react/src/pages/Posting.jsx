@@ -6,6 +6,7 @@ export default function Posting({
   commentValue,
   onCommentChange,
   onCommentSubmit,
+  onFileChange,
   onDragStart,
   // ...any other props (like drag handlers)
 }) {
@@ -28,6 +29,7 @@ export default function Posting({
       <CommentForm value={commentValue}
         onChange={onCommentChange}
         onSubmit={onCommentSubmit}
+        onFileChange={onFileChange}
         item={item} />
     </div>
   );

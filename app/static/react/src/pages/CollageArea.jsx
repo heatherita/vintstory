@@ -4,7 +4,7 @@ import Posting from './Posting';
 
 export default function CollageArea() {
   const collageRef = useRef(null);
-  const [file, setFile] = useState(null);
+  const [files, setFiles] = useState({}); // Array to hold multiple files
   const [tooltipVisible, setTooltipVisible] = useState(false);
   const [items, setItems] = useState([]); // Unified array for img and text
   const [commentInputs, setCommentInputs] = useState([]); // Unified array for img and text
@@ -112,56 +112,30 @@ export default function CollageArea() {
 
 const handleFileChange = (item) =>(e) => {
     const file = e.target.files[0];
-    console.log('Selected file:', file);
-    if (file) {
-      setFile(file);
-    } else {
-      setFile(null);
-    }
+    setFiles(prevFiles => ({ ...prevFiles, [item.id]: file }));
+    console.log('Selected file:', files[item]);
   };
 
-  // const handleUploadClick = () => {
-  //   if (!file) {
-  //     alert("Please select a file to upload.");
-  //     return;
-  //   }
-
-    
-  //   fetch('/api/upload_file', {
-  //     method: 'POST',
-  //     body: formData,
-  //   })
-  //     .then(res => res.json())
-  //     .then(data => {
-  //       console.log('File uploaded successfully:', data);
-  //       setFile(null); // Clear the file input after upload
-  //     })
-  //     .catch(err => {
-  //       console.error('Error uploading file:', err);
-  //     });
-  // }
-
+  
   // returns only new comment then merges in
   const handleCommentSubmit = (item) => (e) => {
     e.preventDefault();
     const form = e.target;
     const formData = new FormData(form);
-
-    for (let pair of formData.entries()) {
-      console.log(pair[0] + ', ' + pair[1]);
+    const file = files[item.id]; // Get the file for this item
+    
+    // Append item_id and content to formData
+    console.log('item id:', item.id);
+    console.log('file:', file.name);
+    formData.append('item_id', item.id);
+    if(file){
+    formData.append('file', file, file.name); // Append the file with its name
     }
 
-    // Append item_id and content to formData
-    formData.append('item_id', item.id);
-    formData.append('file', file, file.name); // Append the file with its name
     const content = commentInputs[item.id];
     if (!content) return;
-    formData.append('content');
-    const file = formData.get('file');
-    if (!file || file.size === 0) {
-      console.log("No file selected!");
-      return;
-    }
+    formData.append('content',content);
+   
 
     fetch(`/api/add_image/${item.id}`, {
       method: 'POST',
@@ -172,7 +146,7 @@ const handleFileChange = (item) =>(e) => {
         setItems(items =>
           items.map(it =>
             it.id == item.id
-              ? { ...it, comments: [...(it.comments || []), newComment] }
+              ? newComment // Replace the item with the new comment
               : it
           )
         );

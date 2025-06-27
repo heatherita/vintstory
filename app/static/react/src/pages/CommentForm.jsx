@@ -2,7 +2,7 @@ export default function CommentForm({ value, onChange, onSubmit, onFileChange, i
 
   return (
     <form onSubmit={onSubmit} enctype="multipart/form-data">
-      <label htmlFor={`content-${item.id}`}>Add a Comments:</label>
+      <label htmlFor={`content-${item.id}`}>Add a Comments now:</label>
       <textarea
         name="content"
         value={value}

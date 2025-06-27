@@ -33,7 +33,8 @@ def create_app():
 
     db.init_app(app)
 
-    IMG_FOLDER = os.path.join("static", "images","uploads")
+    IMG_FOLDER = os.path.join(app.root_path,"static", "uploads")
+    os.makedirs(IMG_FOLDER, exist_ok=True)
     app.config["UPLOAD"] = IMG_FOLDER
 
     from app.blueprints.listings import listings_bp

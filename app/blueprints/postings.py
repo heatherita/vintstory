@@ -43,7 +43,15 @@ def add_item():
 
 @postings_bp.route('/api/posting/<int:posting_id>')
 def show_posting(posting_id):
-    return redirect('/api/postings')  # Placeholder - update if you want detailed views
+    item = Posting.query.get(posting_id)
+    # for item in items:
+    #     print('item: ', item);
+    schema = PostingSchema(many=False)
+    result = schema.dump(item)
+    print('single post json: ', json.dumps(result, indent=4))
+    postjson = jsonify(result)
+    return postjson
+    # return redirect('/api/postings')  # Placeholder - update if you want detailed views
 
 @postings_bp.route('/data/postings/add')
 def add_data():
