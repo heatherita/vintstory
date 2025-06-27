@@ -4,6 +4,7 @@ import Posting from './Posting';
 
 export default function CollageArea() {
   const collageRef = useRef(null);
+  const [file, setFile] = useState(null);
   const [tooltipVisible, setTooltipVisible] = useState(false);
   const [items, setItems] = useState([]); // Unified array for img and text
   const [commentInputs, setCommentInputs] = useState([]); // Unified array for img and text
@@ -109,32 +110,72 @@ export default function CollageArea() {
     setCommentInputs({ ...commentInputs, [itemId]: e.target.value });
   };
 
+const handleFileChange = (item) =>(e) => {
+    const file = e.target.files[0];
+    console.log('Selected file:', file);
+    if (file) {
+      setFile(file);
+    } else {
+      setFile(null);
+    }
+  };
+
+  // const handleUploadClick = () => {
+  //   if (!file) {
+  //     alert("Please select a file to upload.");
+  //     return;
+  //   }
+
+    
+  //   fetch('/api/upload_file', {
+  //     method: 'POST',
+  //     body: formData,
+  //   })
+  //     .then(res => res.json())
+  //     .then(data => {
+  //       console.log('File uploaded successfully:', data);
+  //       setFile(null); // Clear the file input after upload
+  //     })
+  //     .catch(err => {
+  //       console.error('Error uploading file:', err);
+  //     });
+  // }
+
   // returns only new comment then merges in
   const handleCommentSubmit = (item) => (e) => {
     e.preventDefault();
+    const form = e.target;
+    const formData = new FormData(form);
+
+    for (let pair of formData.entries()) {
+      console.log(pair[0] + ', ' + pair[1]);
+    }
+
+    // Append item_id and content to formData
+    formData.append('item_id', item.id);
+    formData.append('file', file, file.name); // Append the file with its name
     const content = commentInputs[item.id];
     if (!content) return;
-    fetch(`/api/add_comment/${item.id}`, {
+    formData.append('content');
+    const file = formData.get('file');
+    if (!file || file.size === 0) {
+      console.log("No file selected!");
+      return;
+    }
+
+    fetch(`/api/add_image/${item.id}`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ item_id: item.id, content })
+      body: formData,
     })
-      .then(res => {
-        console.log('Fetch response:', res);
-        return res.json();
-      })
+      .then(res => res.json())
       .then(newComment => {
-        //console.log('Parsed JSON (new comment):', newComment);
-        setItems(items => {
-          const updated = items.map(it => {
-            //console.log('Comparing:', it.id, 'to', item.id);
-            return it.id == item.id
+        setItems(items =>
+          items.map(it =>
+            it.id == item.id
               ? { ...it, comments: [...(it.comments || []), newComment] }
-              : it;
-          });
-          //console.log('Updated items:', updated);
-          return updated;
-        })
+              : it
+          )
+        );
         setCommentInputs(inputs => ({ ...inputs, [item.id]: '' })); // Clear input
       });
   };
@@ -167,6 +208,7 @@ export default function CollageArea() {
       commentValue={commentInputs[item.id] || ""}
       onCommentChange={(e) => handleCommentChange(item.id, e)}
       onCommentSubmit={handleCommentSubmit(item)}
+      onFileChange={handleFileChange(item)}
       onDragStart={(e) => handleDrag(item, e)} />
   );
   console.log('renderItem:', renderItem);

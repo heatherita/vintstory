@@ -41,16 +41,22 @@ def add_comment_posting_list(posting_id):
 @comments_bp.route('/api/add_image/<int:posting_id>', methods=['GET', 'POST'])
 def file_upload(posting_id):
     if request.method == 'POST':
-        f = request.files['file']
+        # data = request.get_json()
+        f = request.files.get('file')
         filename = secure_filename(f.filename)
         f.save(os.path.join(current_app.config['UPLOAD'], filename))
 
         new_comment = Comment(
-            content=request.form['content'],
+            content=request.form.get('content'),
             posting_id=posting_id,
             image_url=filename
         )
-        db.session.add(new_comment)
-        db.session.commit()
+    schema = CommentSchema(many=False)
+    result = schema.dump(new_comment)
+    print('post json: ', json.dumps(result, indent=4))
+    postjson = jsonify(result)
+    return postjson
+        # db.session.add(new_comment)
+        # db.session.commit()
         #return send_from_directory(current_app.config['UPLOAD'], filename)
-    return redirect(f'/api/posting/{posting_id}')
+        #return redirect(f'/api/posting/{posting_id}')
