@@ -2,10 +2,10 @@ import shutil
 import subprocess
 import click
 from flask import Flask, send_from_directory
-# from models import db
+from config import ProductionConfig, Config, DevelopmentConfig
+from app.models import db
 import os
 
-from app.models import db
 
 
 def create_app():
@@ -28,9 +28,8 @@ def create_app():
         except subprocess.CalledProcessError as e:
             click.echo(f"X Build failed: {e}")
 
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///vintage_whatever.db'
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
+    app.config.from_object('config.ProductionConfig')
     db.init_app(app)
 
     IMG_FOLDER = os.path.join(app.root_path,"static", "uploads")
