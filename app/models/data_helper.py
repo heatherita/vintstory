@@ -4,6 +4,8 @@ from app.models.posting import Posting
 
 
 class DataHelper:
+
+    #postings -> comments are like customers -> orders in terms of normalization. Each comment should have a posting fk.
     @staticmethod
     def add_dummy_posting_data():
         dummy_comments = [
@@ -59,32 +61,8 @@ class DataHelper:
         db.session.commit()
 
 
-    # @staticmethod
-    # def add_dummy_listing_data():
-    #     dummy_listing_items = [
-    #         ['blouse', 'nice pretty blouse', 'found at the store', 12.0, 'martin', 'hbuch4@yahoo.com', 'th-1487244758.jpeg', 'bla', [
-    #             "what a cool blouse!", "that blouse just beats all", "I have a blouse just like it!", "it's on fire!"
-    #         ]],
-    #         ['skirt', 'striped skirt', 'found in a pond', 32.0, 'jenny', 'hbuch4@yahoo.com', '252420-3058550390.jpg', 'doh', [
-    #             "what a striped skirt!", "that skirt is so fashionable", "I would wear that every day", "That's like a skirt i had during the roman times"
-    #         ]],
-    #         ['dress', 'a checkered dress', 'this checkered dress has a checkered past', 42.0, 'rudolph', 'hbuch4@yahoo.com', 'kate-spade-laventura-stripe-coreen-striped-skirt-product-1-16046188-202686913-3610312227.jpeg', 'doh', [
-    #             "well! I never!", "don't assume!"
-    #         ]]
-    #     ]
-    #
-    #     for item in dummy_listing_items:
-    #         title, description, story, price, seller_name, seller_contact, image_url, then_image_url, comments = item
-    #         listing_comments = [Comment(content=comment) for comment in comments]
-    #         new_item = Listing(
-    #             title=title, description=description, story=story, price=price,
-    #             seller_name=seller_name, seller_contact=seller_contact,
-    #             image_url=image_url, then_image_url=then_image_url, comments=listing_comments
-    #         )
-    #         db.session.add(new_item)
-    #     db.session.commit()
 
-# fake = Faker()
+ # fake = Faker()
 #
 # vintage_image_urls = [
 #     "https://upload.wikimedia.org/wikipedia/commons/3/38/Vintage_blouse.jpg",
@@ -95,35 +73,33 @@ class DataHelper:
 #     "https://upload.wikimedia.org/wikipedia/commons/0/00/Vintage_men_suits_1920s.jpg"
 # ]
 #
-# class DataHelper:
 #
-#     @staticmethod
-#     def add_random_postings(num_postings=10, max_comments_per_posting=3):
-#         for _ in range(num_postings):
-#             image_url = random.choice(vintage_image_urls)
-#             then_image_url = random.choice(vintage_image_urls)
+    @staticmethod
+    def add_random_fake_postings(num_postings=10, max_comments_per_posting=3):
+        for _ in range(num_postings):
+            image_url = random.choice(vintage_image_urls)
+            then_image_url = random.choice(vintage_image_urls)
+            posting = Posting(
+                title=fake.catch_phrase(),
+                description=fake.text(max_nb_chars=200),
+                story=fake.paragraph(),
+                user_name=fake.first_name(),
+                user_contact=fake.email(),
+                image_url=image_url,
+                then_image_url=then_image_url
+            )
+            db.session.add(posting)
+            db.session.flush()
+
+            for _ in range(random.randint(0, max_comments_per_posting)):
+                comment = Comment(
+                    content=fake.sentence(),
+                    image_url=random.choice(vintage_image_urls),
+                    posting_id=posting.id
+                )
+                db.session.add(comment)
+
+        db.session.commit()
 #
-#             posting = Posting(
-#                 title=fake.catch_phrase(),
-#                 description=fake.text(max_nb_chars=200),
-#                 story=fake.paragraph(),
-#                 user_name=fake.first_name(),
-#                 user_contact=fake.email(),
-#                 image_url=image_url,
-#                 then_image_url=then_image_url
-#             )
-#             db.session.add(posting)
-#             db.session.flush()
-#
-#             for _ in range(random.randint(0, max_comments_per_posting)):
-#                 comment = Comment(
-#                     content=fake.sentence(),
-#                     image_url=random.choice(vintage_image_urls),
-#                     posting_id=posting.id
-#                 )
-#                 db.session.add(comment)
-#
-#         db.session.commit()
-# #
 #example usage:
 #DataHelper.add_random_postings(num_postings=5, max_comments_per_posting=2)
